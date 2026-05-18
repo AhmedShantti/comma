@@ -1,25 +1,20 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { CAT_DATA, CATEGORIES } from '@/lib/data';
 import { useLang } from '../LangProvider';
-import type { UIKey } from '@/lib/i18n';
-import type { CategorySlug } from '@/lib/types';
-
-const CAT_KEY: Record<CategorySlug, UIKey> = {
-  'coffees': 'cat_coffees',
-  'hot-drinks': 'cat_hot_drinks',
-  'cold-drinks': 'cat_cold_drinks',
-  'fresh-juices': 'cat_fresh_juices',
-  'smoothies': 'cat_smoothies',
-  'desserts': 'cat_desserts',
-  'shisha': 'cat_shisha',
-  'snacks': 'cat_snacks',
-};
+import { useDashboardData } from './DashboardProvider';
 
 export function CategoryBars() {
-  const { t } = useLang();
+  const { lang, t } = useLang();
+  const { data, loading } = useDashboardData();
   const ref = useRef<HTMLDivElement>(null);
+
+  const categories = (data?.category_breakdown || []).map((cat) => ({
+    name_en: cat.name_en,
+    name_ar: cat.name_ar,
+    val: cat.revenue.toLocaleString(),
+    pct: cat.percentage,
+  }));
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,7 +23,21 @@ export function CategoryBars() {
       });
     }, 80);
     return () => clearTimeout(timer);
-  }, []);
+  }, [categories.length]);
+
+  if (loading) {
+    return (
+      <div className="section-card">
+        <div className="section-head">
+          <div>
+            <div className="section-title">{t('orders_by_category')}</div>
+            <div className="section-sub">{t('total_this_week')}</div>
+          </div>
+        </div>
+        <div className="chart-body skeleton" style={{ height: '200px' }} />
+      </div>
+    );
+  }
 
   return (
     <div className="section-card">
@@ -41,17 +50,23 @@ export function CategoryBars() {
       <div className="chart-body">
         <div ref={ref}>
           <div className="cat-bar-list">
-            {CAT_DATA.map((d) => (
-              <div key={d.catSlug} className="cat-bar-row">
-                <div className="cat-bar-top">
-                  <span className="cat-bar-name">{t(CAT_KEY[d.catSlug])}</span>
-                  <span className="cat-bar-val">{d.val}</span>
+            {categories.length > 0 ? (
+              categories.map((d, i) => (
+                <div key={`${d.name_en}-${i}`} className="cat-bar-row">
+                  <div className="cat-bar-top">
+                    <span className="cat-bar-name">
+                      {lang === 'ar' ? d.name_ar : d.name_en}
+                    </span>
+                    <span className="cat-bar-val">{d.val}</span>
+                  </div>
+                  <div className="cat-bar-track">
+                    <div className="cat-bar-fill" style={{ width: '0%' }} data-target={d.pct} />
+                  </div>
                 </div>
-                <div className="cat-bar-track">
-                  <div className="cat-bar-fill" style={{ width: '0%' }} data-target={d.pct} />
-                </div>
-              </div>
-            ))}
+              ))
+            ) : (
+              <div style={{ padding: '16px', color: 'var(--text-muted)' }}>No data available</div>
+            )}
           </div>
         </div>
       </div>

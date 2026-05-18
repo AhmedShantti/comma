@@ -5,3 +5,11 @@ out
 next-env.d.ts
 .env*.local
 .DS_Store
+*.log
+
+# Backend (POS)
+POS/node_modules
+POS/dist
+POS/.env
+POS/stdout.log
+POS/stderr.log

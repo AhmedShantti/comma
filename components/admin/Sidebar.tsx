@@ -29,7 +29,7 @@ const NAV: NavItem[] = [
     ),
   },
   {
-    href: '/',
+    href: '/dashboard/menu',
     labelKey: 'menu',
     icon: (
       <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
@@ -48,6 +48,18 @@ const NAV: NavItem[] = [
     ),
   },
   {
+    href: '/dashboard/tables',
+    labelKey: 'tables',
+    icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="14" rx="2" />
+        <line x1="3" y1="11" x2="21" y2="11" />
+        <line x1="8" y1="17" x2="8" y2="21" />
+        <line x1="16" y1="17" x2="16" y2="21" />
+      </svg>
+    ),
+  },
+  {
     href: '/dashboard/analytics',
     labelKey: 'analytics',
     icon: (
@@ -55,6 +67,19 @@ const NAV: NavItem[] = [
         <line x1="18" y1="20" x2="18" y2="10" />
         <line x1="12" y1="20" x2="12" y2="4" />
         <line x1="6" y1="20" x2="6" y2="14" />
+      </svg>
+    ),
+  },
+  {
+    href: '/dashboard/reports',
+    labelKey: 'reports',
+    icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <line x1="16" y1="13" x2="8" y2="13" />
+        <line x1="16" y1="17" x2="8" y2="17" />
+        <polyline points="10 9 9 9 8 9" />
       </svg>
     ),
   },
@@ -70,11 +95,13 @@ const NAV: NavItem[] = [
   },
 ];
 
-const ROLE_LABEL_KEY = {
-  manager: 'role_manager',
+const ROLE_LABEL_KEY: Record<string, string> = {
+  admin:      'role_admin',
+  manager:    'role_manager',
+  cashier:    'role_cashier',
   accounting: 'role_accounting',
-  garson: 'role_garson',
-} as const;
+  garson:     'role_garson',
+};
 
 export function Sidebar({ open }: Props) {
   const pathname = usePathname();
@@ -82,14 +109,12 @@ export function Sidebar({ open }: Props) {
   const { lang, t } = useLang();
   const { user, logout } = useAuth();
 
-  const visibleNav = NAV.filter((item) => {
-    if (item.href === '/') return true;
-    return user ? canAccess(user.role, item.href) : false;
-  });
+  const visibleNav = NAV.filter((item) =>
+    user ? canAccess(user.role, item.href) : false
+  );
 
-  function handleLogout() {
-    logout();
-    router.replace('/login');
+  async function handleLogout() {
+    await logout();
   }
 
   return (
@@ -105,9 +130,7 @@ export function Sidebar({ open }: Props) {
           const isActive =
             item.href === '/dashboard'
               ? pathname === '/dashboard'
-              : item.href === '/'
-                ? pathname === '/'
-                : pathname.startsWith(item.href);
+              : pathname.startsWith(item.href);
           return (
             <Link key={item.href} href={item.href} className={isActive ? 'active' : undefined}>
               {item.icon}
@@ -125,7 +148,7 @@ export function Sidebar({ open }: Props) {
               <div className="user-avatar">{user.name[lang].charAt(0)}</div>
               <div className="user-info">
                 <div className="user-name">{user.name[lang]}</div>
-                <div className="user-role">{t(ROLE_LABEL_KEY[user.role])}</div>
+                <div className="user-role">{t((ROLE_LABEL_KEY[user.role] ?? 'role_cashier') as any)}</div>
               </div>
             </div>
             <button type="button" className="sidebar-logout" onClick={handleLogout}>

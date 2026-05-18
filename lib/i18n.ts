@@ -8,6 +8,7 @@ export const UI = {
   navigation: { en: 'Navigation', ar: 'التنقل' },
   dashboard: { en: 'Dashboard', ar: 'لوحة التحكم' },
   orders: { en: 'Orders', ar: 'الطلبات' },
+  tables: { en: 'Tables', ar: 'الطاولات' },
   analytics: { en: 'Analytics', ar: 'التحليلات' },
   settings: { en: 'Settings', ar: 'الإعدادات' },
 
@@ -29,7 +30,7 @@ export const UI = {
 
   // Card
   popular: { en: 'Popular', ar: 'الأكثر طلباً' },
-  egp: { en: 'EGP', ar: 'ج.م' },
+  egp: { en: 'ILS', ar: '₪' },
 
   // Admin chrome
   admin_role: { en: 'admin@comma.cafe', ar: 'admin@comma.cafe' },
@@ -38,14 +39,17 @@ export const UI = {
   live: { en: 'Live', ar: 'مباشر' },
 
   // Stat labels
-  total_orders: { en: 'Total Orders', ar: 'إجمالي الطلبات' },
-  revenue_egp: { en: 'Revenue (EGP)', ar: 'الإيرادات (ج.م)' },
-  total_customers: { en: 'Total Customers', ar: 'إجمالي العملاء' },
-  active_orders: { en: 'Active Orders', ar: 'الطلبات النشطة' },
+  total_orders:    { en: 'Total Orders',     ar: 'إجمالي الطلبات' },
+  total_revenue:   { en: 'Total Revenue',    ar: 'إجمالي الإيرادات' },
+  average_order:   { en: 'Avg. Order Value', ar: 'متوسط قيمة الطلب' },
+  items_sold:      { en: 'Items Sold',       ar: 'الأصناف المباعة' },
+  revenue_egp:     { en: 'Revenue (ILS)',    ar: 'الإيرادات (₪)' },
+  total_customers: { en: 'Total Customers',  ar: 'إجمالي العملاء' },
+  active_orders:   { en: 'Active Orders',    ar: 'الطلبات النشطة' },
 
   // Revenue chart
   revenue_this_week: { en: 'Revenue This Week', ar: 'الإيرادات هذا الأسبوع' },
-  daily_revenue: { en: 'Daily revenue in EGP', ar: 'الإيرادات اليومية بالجنيه المصري' },
+  daily_revenue: { en: 'Daily revenue in ILS', ar: 'الإيرادات اليومية بالشيكل' },
   vs_last_week: { en: '+8% vs last week', ar: '+8٪ مقارنة بالأسبوع الماضي' },
 
   // Cat bars
@@ -60,10 +64,15 @@ export const UI = {
   // Status
   order_status: { en: 'Order Status', ar: 'حالة الطلب' },
   distribution: { en: 'Distribution', ar: 'التوزيع' },
-  completed: { en: 'Completed', ar: 'مكتمل' },
+  // All backend OrderStatus values (lowercase)
+  open:      { en: 'Open',      ar: 'مفتوح' },
+  confirmed: { en: 'Confirmed', ar: 'مؤكَّد' },
   preparing: { en: 'Preparing', ar: 'قيد التحضير' },
-  pending: { en: 'Pending', ar: 'قيد الانتظار' },
+  ready:     { en: 'Ready',     ar: 'جاهز' },
+  completed: { en: 'Completed', ar: 'مكتمل' },
   cancelled: { en: 'Cancelled', ar: 'ملغي' },
+  refunded:  { en: 'Refunded',  ar: 'مُسترجَع' },
+  pending:   { en: 'Pending',   ar: 'قيد الانتظار' },
 
   // Orders table
   recent_orders: { en: 'Recent Orders', ar: 'الطلبات الأخيرة' },
@@ -108,6 +117,13 @@ export const UI = {
   demo_accounts: { en: 'Demo accounts — click to fill', ar: 'حسابات تجريبية — اضغط لملء البيانات' },
   logout: { en: 'Logout', ar: 'تسجيل الخروج' },
 
+  // Shift modal
+  open_shift:   { en: 'Open Shift',     ar: 'فتح وردية' },
+  opening_cash: { en: 'Opening Cash',   ar: 'النقد الافتتاحي' },
+
+  // Filters
+  all: { en: 'All', ar: 'الكل' },
+
   // Add Order modal
   add_order: { en: 'Add Order', ar: 'إضافة طلب' },
   new_order: { en: 'New Order', ar: 'طلب جديد' },
@@ -123,10 +139,52 @@ export const UI = {
   just_now: { en: 'just now', ar: 'الآن' },
   validation_required: { en: 'Please fill in all fields and add at least one item.', ar: 'يرجى ملء جميع الحقول وإضافة صنف واحد على الأقل.' },
 
-  // Role names
-  role_manager: { en: 'Manager', ar: 'مدير' },
+  // Role names (match backend UserRole enum)
+  role_manager:  { en: 'Manager',  ar: 'مدير' },
+  role_cashier:  { en: 'Cashier',  ar: 'كاشير' },
+  role_admin:    { en: 'Admin',    ar: 'مدير النظام' },
+  // Legacy keys kept for backward compat
   role_accounting: { en: 'Accounting', ar: 'محاسبة' },
-  role_garson: { en: 'Waiter', ar: 'جرسون' },
+  role_garson:     { en: 'Waiter',     ar: 'جرسون' },
+
+  // Reports
+  reports: { en: 'Reports', ar: 'التقارير' },
+  reports_overview: { en: 'Reports Overview', ar: 'نظرة عامة على التقارير' },
+  daily_reports: { en: 'Daily Reports', ar: 'التقارير اليومية' },
+  weekly_reports: { en: 'Weekly Reports', ar: 'التقارير الأسبوعية' },
+  monthly_reports: { en: 'Monthly Reports', ar: 'التقارير الشهرية' },
+  generate_report: { en: 'Generate Report', ar: 'إنشاء تقرير' },
+  download_pdf: { en: 'Download PDF', ar: 'تحميل PDF' },
+  net_profit: { en: 'Net Profit', ar: 'صافي الربح' },
+  gross_profit: { en: 'Gross Profit', ar: 'إجمالي الربح' },
+  total_cost: { en: 'Total Cost', ar: 'إجمالي التكلفة' },
+  profit_margin: { en: 'Profit Margin', ar: 'هامش الربح' },
+  completed_orders: { en: 'Completed', ar: 'مكتملة' },
+  cancelled_orders: { en: 'Cancelled', ar: 'ملغاة' },
+  avg_order_value: { en: 'Avg Order Value', ar: 'متوسط قيمة الطلب' },
+  top_products: { en: 'Top Products', ar: 'أفضل المنتجات' },
+  worst_products: { en: 'Worst Products', ar: 'أضعف المنتجات' },
+  payment_methods: { en: 'Payment Methods', ar: 'طرق الدفع' },
+  hourly_dist: { en: 'Hourly Distribution', ar: 'التوزيع بالساعة' },
+  daily_breakdown: { en: 'Daily Breakdown', ar: 'التفصيل اليومي' },
+  weekly_breakdown: { en: 'Weekly Breakdown', ar: 'التفصيل الأسبوعي' },
+  busiest_day: { en: 'Busiest Day', ar: 'اليوم الأكثر نشاطاً' },
+  slowest_day: { en: 'Slowest Day', ar: 'اليوم الأقل نشاطاً' },
+  new_customers: { en: 'New Customers', ar: 'عملاء جدد' },
+  returning_customers: { en: 'Returning', ar: 'عملاء عائدون' },
+  growth: { en: 'Growth', ar: 'النمو' },
+  no_reports: { en: 'No reports available', ar: 'لا توجد تقارير' },
+  generate_first: { en: 'Generate your first report to see data here', ar: 'قم بإنشاء أول تقرير لعرض البيانات هنا' },
+  product_name: { en: 'Product', ar: 'المنتج' },
+  quantity: { en: 'Qty', ar: 'الكمية' },
+  revenue: { en: 'Revenue', ar: 'الإيرادات' },
+  week_label: { en: 'Week', ar: 'الأسبوع' },
+  profit: { en: 'Profit', ar: 'الربح' },
+  date_label: { en: 'Date', ar: 'التاريخ' },
+  report_date: { en: 'Report Date', ar: 'تاريخ التقرير' },
+  select_date: { en: 'Select date', ar: 'اختر التاريخ' },
+  generating: { en: 'Generating...', ar: 'جاري الإنشاء...' },
+  view_all: { en: 'View All', ar: 'عرض الكل' },
 
   // Days (short)
   day_mon: { en: 'Mon', ar: 'إثنين' },

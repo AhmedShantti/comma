@@ -11,9 +11,9 @@ import type { UIKey } from '@/lib/i18n';
 type Demo = { username: string; password: string; roleKey: UIKey };
 
 const DEMOS: Demo[] = [
+  { username: 'admin',   password: 'admin123',   roleKey: 'role_admin' },
   { username: 'manager', password: 'manager123', roleKey: 'role_manager' },
-  { username: 'accounting', password: 'accounting123', roleKey: 'role_accounting' },
-  { username: 'garson', password: 'garson123', roleKey: 'role_garson' },
+  { username: 'cashier', password: 'cashier123', roleKey: 'role_cashier' },
 ];
 
 export function LoginForm() {
@@ -29,15 +29,19 @@ export function LoginForm() {
     if (!loading && user) router.replace(getLandingPath(user.role));
   }, [user, loading, router]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    const ok = login(username.trim(), password);
-    if (!ok) {
+    setError('');
+    try {
+      const ok = await login(username.trim(), password);
+      if (!ok) {
+        setError(t('login_error'));
+        setSubmitting(false);
+      }
+    } catch (err) {
       setError(t('login_error'));
       setSubmitting(false);
-    } else {
-      setError('');
     }
   }
 

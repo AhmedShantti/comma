@@ -1,6 +1,7 @@
 import type { Localized } from './i18n';
 
-export type Role = 'manager' | 'accounting' | 'garson';
+// Roles match the backend UserRole enum: admin | manager | cashier
+export type Role = 'admin' | 'manager' | 'cashier';
 
 export type User = {
   username: string;
@@ -9,37 +10,17 @@ export type User = {
   name: Localized;
 };
 
-export const USERS: User[] = [
-  {
-    username: 'manager',
-    password: 'manager123',
-    role: 'manager',
-    name: { en: 'Mariam', ar: 'مريم' },
-  },
-  {
-    username: 'accounting',
-    password: 'accounting123',
-    role: 'accounting',
-    name: { en: 'Khaled', ar: 'خالد' },
-  },
-  {
-    username: 'garson',
-    password: 'garson123',
-    role: 'garson',
-    name: { en: 'Yousef', ar: 'يوسف' },
-  },
-];
-
 export const ROLE_PATHS: Record<Role, string[]> = {
-  manager: ['/dashboard', '/dashboard/orders', '/dashboard/analytics', '/dashboard/settings'],
-  accounting: ['/dashboard', '/dashboard/orders', '/dashboard/analytics'],
-  garson: ['/dashboard/orders'],
+  admin:   ['/dashboard', '/dashboard/orders', '/dashboard/tables', '/dashboard/analytics', '/dashboard/reports', '/dashboard/menu', '/dashboard/settings'],
+  manager: ['/dashboard', '/dashboard/orders', '/dashboard/tables', '/dashboard/analytics', '/dashboard/reports', '/dashboard/menu', '/dashboard/settings'],
+  cashier: ['/dashboard/orders', '/dashboard/tables'],
 };
 
 export function getLandingPath(role: Role): string {
-  return ROLE_PATHS[role][0];
+  return ROLE_PATHS[role]?.[0] ?? '/dashboard/orders';
 }
 
 export function canAccess(role: Role, pathname: string): boolean {
-  return ROLE_PATHS[role].includes(pathname);
+  const paths = ROLE_PATHS[role] ?? [];
+  return paths.some(p => pathname === p || pathname.startsWith(p + '/'));
 }

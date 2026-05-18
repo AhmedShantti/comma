@@ -1,26 +1,102 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { MENU, CATEGORIES } from '@/lib/data';
-import type { CategoryFilter } from '@/lib/types';
+import { api } from '@/lib/api';
+import type { CategoryFilter, MenuItem, CategorySlug, Localized } from '@/lib/types';
 import { useLang } from '../LangProvider';
-import { UI, pluralizeItems } from '@/lib/i18n';
+import { pluralizeItems } from '@/lib/i18n';
 import { MenuCard } from './MenuCard';
+
+type FrontendCategory = {
+  id?: string;
+  slug: CategorySlug;
+  name: Localized;
+};
 
 export function MenuClient() {
   const { lang, t } = useLang();
-  const [activeCat, setActiveCat] = useState<CategoryFilter>('all');
+  const [activeCat, setActiveCat] = useState<string>('all');
   const [searchInput, setSearchInput] = useState('');
   const [searchQ, setSearchQ] = useState('');
+  const [items, setItems] = useState<MenuItem[]>([]);
+  const [categories, setCategories] = useState<FrontendCategory[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setSearchQ(searchInput), 220);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => setSearchQ(searchInput), 220);
+    return () => clearTimeout(timer);
   }, [searchInput]);
 
-  const items = useMemo(() => {
+  // Map category names to frontend slugs
+  const nameToSlug: Record<string, CategorySlug> = {
+    'Coffees': 'coffees',
+    'Coffee': 'coffees',
+    'Hot Drinks': 'hot-drinks',
+    'Hot Beverages': 'hot-drinks',
+    'Cold Drinks': 'cold-drinks',
+    'Cold Beverages': 'cold-drinks',
+    'Fresh Juices': 'fresh-juices',
+    'Smoothies': 'smoothies',
+    'Desserts': 'desserts',
+    'Shisha': 'shisha',
+    'Snacks': 'snacks',
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [catsRes, itemsRes] = await Promise.all([
+          api.categories.getAll('limit=100'),
+          api.menuItems.getAll('limit=100&is_active=true'),
+        ]);
+
+        // Unwrap paginated envelope: { data: [...], meta: {...} }
+        const rawCats  = Array.isArray(catsRes)  ? catsRes  : (catsRes?.data  ?? []);
+        const rawItems = Array.isArray(itemsRes) ? itemsRes : (itemsRes?.data ?? []);
+
+        // Map backend category shape → frontend shape
+        // Create id->slug mapping from backend categories
+        const catIdToSlug: Record<string, CategorySlug> = {};
+        const mappedCats = rawCats
+          .map((c: any) => {
+            const slug = nameToSlug[c.name_en] || 'snacks'; // default to snacks if no match
+            catIdToSlug[c.id] = slug;
+            return {
+              id: c.id,
+              slug,
+              name: { en: c.name_en ?? '', ar: c.name_ar ?? '' },
+            };
+          })
+          .filter((cat: any) => nameToSlug[cat.name.en]); // only include mapped categories
+
+        // Map backend menu-item shape → frontend shape
+        const mappedItems = rawItems.map((m: any) => ({
+          id:      m.id,
+          cat:     catIdToSlug[m.category_id] || 'snacks', // use mapped slug, default to snacks
+          price:   Number(m.base_price ?? 0),
+          img:     m.image_url ?? '',
+          popular: false,
+          name:    { en: m.name_en ?? '', ar: m.name_ar ?? '' },
+          desc:    { en: m.description_en ?? '', ar: m.description_ar ?? '' },
+          tags:    [],
+        }));
+
+        setCategories(mappedCats);
+        setItems(mappedItems);
+      } catch (err) {
+        setCategories([]);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const filteredItems = useMemo(() => {
     const q = searchQ.toLowerCase().trim();
-    return MENU.filter((item) => {
+    return items.filter((item) => {
       const matchCat = activeCat === 'all' || item.cat === activeCat;
       if (!q) return matchCat;
       const haystack = [
@@ -31,15 +107,15 @@ export function MenuClient() {
       ].join(' ').toLowerCase();
       return matchCat && haystack.includes(q);
     });
-  }, [activeCat, searchQ]);
+  }, [activeCat, searchQ, items]);
 
   const hasFilter = !!searchQ || activeCat !== 'all';
 
-  let label = pluralizeItems(items.length, lang);
+  let label = pluralizeItems(filteredItems.length, lang);
   if (activeCat !== 'all') {
-    const cat = CATEGORIES.find((c) => c.slug === activeCat);
+    const cat = categories.find((c) => c.slug === activeCat);
     if (cat) {
-      const catName = UI[cat.labelKey][lang];
+      const catName = cat.name[lang];
       label += lang === 'ar' ? ` في ${catName}` : ` in ${catName}`;
     }
   }
@@ -76,13 +152,19 @@ export function MenuClient() {
 
             <div className="cat-tabs-wrap">
               <div className="cat-tabs">
-                {CATEGORIES.map((cat) => (
+                <button
+                  className={`cat-tab${activeCat === 'all' ? ' active' : ''}`}
+                  onClick={() => setActiveCat('all')}
+                >
+                  All
+                </button>
+                {categories.map((cat) => (
                   <button
-                    key={cat.slug}
+                    key={cat.id}
                     className={`cat-tab${cat.slug === activeCat ? ' active' : ''}`}
                     onClick={() => setActiveCat(cat.slug)}
                   >
-                    {t(cat.labelKey)}
+                    {cat.name[lang]}
                   </button>
                 ))}
               </div>
@@ -104,7 +186,11 @@ export function MenuClient() {
           </div>
 
           <div className="menu-grid">
-            {items.length === 0 ? (
+            {loading ? (
+              <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>
+                Loading menu...
+              </div>
+            ) : filteredItems.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">
                   <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
@@ -117,7 +203,7 @@ export function MenuClient() {
                 <button className="btn-ghost" onClick={clearFilters}>{t('clear_filters')}</button>
               </div>
             ) : (
-              items.map((item, i) => <MenuCard key={item.id} item={item} index={i} />)
+              filteredItems.map((item, i) => <MenuCard key={item.id} item={item} index={i} />)
             )}
           </div>
         </div>

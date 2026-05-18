@@ -22,17 +22,28 @@ export function MenuCard({ item, index }: Props) {
   return (
     <article className="menu-card" style={{ animationDelay: `${index * 0.045}s` }}>
       <div className="card-img-wrap">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={item.img}
-          alt={item.name[lang]}
-          loading="lazy"
-          onError={(e) => {
-            const img = e.currentTarget;
-            if (img.parentElement) img.parentElement.style.background = 'var(--bg-elevated)';
-            img.style.display = 'none';
-          }}
-        />
+        {item.img ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={item.img}
+              alt={item.name[lang]}
+              loading="lazy"
+              onError={(e) => {
+                const img = e.currentTarget;
+                if (img.parentElement) img.parentElement.style.background = 'var(--bg-elevated)';
+                img.style.display = 'none';
+              }}
+            />
+          </>
+        ) : (
+          <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-elevated)' }}>
+            <svg width="32" height="32" fill="none" stroke="var(--text-muted)" strokeWidth="1.5" viewBox="0 0 24 24">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21 15 16 10 5 21"/>
+            </svg>
+          </div>
+        )}
         <div className="card-img-price">
           <span>{t('egp')} {item.price}</span>
         </div>
