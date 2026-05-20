@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
+import { mockCategories, mockMenuItems } from '@/lib/mockData';
 import type { CategoryFilter, MenuItem, CategorySlug, Localized } from '@/lib/types';
 import { useLang } from '../LangProvider';
 import { pluralizeItems } from '@/lib/i18n';
@@ -29,6 +30,10 @@ export function MenuClient() {
 
   // Map category names to frontend slugs
   const nameToSlug: Record<string, CategorySlug> = {
+    'Appetizers': 'appetizers',
+    'Main Courses': 'main-courses',
+    'Beverages': 'beverages',
+    'Desserts': 'desserts',
     'Coffees': 'coffees',
     'Coffee': 'coffees',
     'Hot Drinks': 'hot-drinks',
@@ -37,7 +42,6 @@ export function MenuClient() {
     'Cold Beverages': 'cold-drinks',
     'Fresh Juices': 'fresh-juices',
     'Smoothies': 'smoothies',
-    'Desserts': 'desserts',
     'Shisha': 'shisha',
     'Snacks': 'snacks',
   };
@@ -46,14 +50,9 @@ export function MenuClient() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [catsRes, itemsRes] = await Promise.all([
-          api.categories.getAll('limit=100'),
-          api.menuItems.getAll('limit=100&is_active=true'),
-        ]);
-
-        // Unwrap paginated envelope: { data: [...], meta: {...} }
-        const rawCats  = Array.isArray(catsRes)  ? catsRes  : (catsRes?.data  ?? []);
-        const rawItems = Array.isArray(itemsRes) ? itemsRes : (itemsRes?.data ?? []);
+        // Using mock data for demo - replace with api calls when backend is ready
+        const rawCats = mockCategories;
+        const rawItems = mockMenuItems;
 
         // Map backend category shape → frontend shape
         // Create id->slug mapping from backend categories

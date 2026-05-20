@@ -97,12 +97,15 @@ export const UI = {
 
   // Categories
   cat_all: { en: 'All', ar: 'الكل' },
+  cat_appetizers: { en: 'Appetizers', ar: 'المقبلات' },
+  cat_main_courses: { en: 'Main Courses', ar: 'الأطباق الرئيسية' },
+  cat_beverages: { en: 'Beverages', ar: 'المشروبات' },
+  cat_desserts: { en: 'Desserts', ar: 'الحلويات' },
   cat_coffees: { en: 'Coffees', ar: 'القهوة' },
   cat_hot_drinks: { en: 'Hot Drinks', ar: 'المشروبات الساخنة' },
   cat_cold_drinks: { en: 'Cold Drinks', ar: 'المشروبات الباردة' },
   cat_fresh_juices: { en: 'Fresh Juices', ar: 'العصائر الطازجة' },
   cat_smoothies: { en: 'Smoothies', ar: 'السموذي' },
-  cat_desserts: { en: 'Desserts', ar: 'الحلويات' },
   cat_shisha: { en: 'Shisha', ar: 'الشيشة' },
   cat_snacks: { en: 'Snacks', ar: 'الوجبات الخفيفة' },
 

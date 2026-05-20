@@ -7,12 +7,15 @@ import { useLang } from '../LangProvider';
 type Props = { item: MenuItem; index: number };
 
 const CAT_KEY: Record<MenuItem['cat'], keyof typeof UI> = {
+  'appetizers': 'cat_appetizers',
+  'main-courses': 'cat_main_courses',
+  'beverages': 'cat_beverages',
+  'desserts': 'cat_desserts',
   'coffees': 'cat_coffees',
   'hot-drinks': 'cat_hot_drinks',
   'cold-drinks': 'cat_cold_drinks',
   'fresh-juices': 'cat_fresh_juices',
   'smoothies': 'cat_smoothies',
-  'desserts': 'cat_desserts',
   'shisha': 'cat_shisha',
   'snacks': 'cat_snacks',
 };
