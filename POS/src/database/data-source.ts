@@ -32,6 +32,8 @@ const config: any = {
 if (databaseUrl) {
   config.url = databaseUrl;
   config.ssl = isProduction ? { rejectUnauthorized: false } : false;
+  // Force IPv4 to avoid ENETUNREACH on Render with Supabase IPv6
+  config.extra = { max: 20, family: 4 };
 } else {
   config.host = process.env.DB_HOST || 'localhost';
   config.port = parseInt(process.env.DB_PORT || '5432');
