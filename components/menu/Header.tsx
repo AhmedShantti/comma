@@ -1,27 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { useEffect } from 'react';
 import { api } from '@/lib/api';
 import { useLang } from '../LangProvider';
 import { LangToggle } from '../LangToggle';
+import { Logo } from '../Logo';
 
 export function Header() {
   const { t } = useLang();
-  const [cafeName, setCafeName] = useState('C O M M A');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const data = await api.settings.get();
-        if (data?.cafe_name) {
-          setCafeName(data.cafe_name);
-        }
+        await api.settings.get();
       } catch {
         // use default
-      } finally {
-        setLoading(false);
       }
     };
     fetchSettings();
@@ -31,9 +24,9 @@ export function Header() {
     <header className="site-header">
       <div className="container">
         <div className="header-inner">
-          <span className="brand">{cafeName}</span>
+          <Logo href="/" width={50} height={50} />
           <nav className="nav-links" style={{ gap: 12 }}>
-            <Link href="/" className="active">{t('menu')}</Link>
+            <a href="/" className="active">{t('menu')}</a>
             <LangToggle />
           </nav>
         </div>

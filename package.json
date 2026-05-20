@@ -6,6 +6,7 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
+    "start:prod": "next start",
     "lint": "next lint",
     "api": "node api-server.js",
     "dev:all": "concurrently \"npm run api\" \"npm run dev\"",

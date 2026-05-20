@@ -23,7 +23,15 @@ async function bootstrap() {
     new LoggingInterceptor(),
   );
 
-  const corsOrigins = (configService.get('CORS_ORIGINS') || 'http://localhost:3000').split(',');
+  // Build CORS origins from env variables
+  const defaultOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+  const frontendUrl = configService.get('FRONTEND_URL');
+
+  let corsOrigins = (configService.get('CORS_ORIGINS') || defaultOrigins.join(',')).split(',');
+  if (frontendUrl && !corsOrigins.includes(frontendUrl)) {
+    corsOrigins.push(frontendUrl);
+  }
+
   app.enableCors({
     origin: corsOrigins.map((o: string) => o.trim()),
     credentials: true,
@@ -40,8 +48,8 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   const port = configService.get('PORT') || 3000;
-  await app.listen(port);
-  logger.log(`Application running on port ${port}`);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`Application running on http://0.0.0.0:${port}`);
 }
 
 bootstrap();

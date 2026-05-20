@@ -35,7 +35,11 @@ import { HealthController } from './health.controller';
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => config.get('database'),
+      useFactory: (config: ConfigService) => {
+        const dbConfig = config.get('database');
+        if (!dbConfig) throw new Error('Database config not found');
+        return dbConfig;
+      },
     }),
     CacheModule.registerAsync({
       isGlobal: true,

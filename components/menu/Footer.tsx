@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { useLang } from '../LangProvider';
+import { Logo } from '../Logo';
 
 type SettingsData = {
   cafe_name?: string;
@@ -31,7 +32,7 @@ export function Footer() {
     <footer className="site-footer">
       <div className="container">
         <div className="footer-inner">
-          <span className="footer-brand">{settings.cafe_name || 'C O M M A'}</span>
+          <Logo width={40} height={40} />
           <span className="footer-copy">{t('footer_copy')}</span>
           {(settings.phone || settings.email || settings.address) && (
             <div style={{ fontSize: '0.875rem', marginTop: '12px', opacity: 0.8 }}>
