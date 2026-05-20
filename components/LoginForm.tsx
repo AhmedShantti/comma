@@ -11,7 +11,7 @@ import type { UIKey } from '@/lib/i18n';
 type Demo = { username: string; password: string; roleKey: UIKey };
 
 const DEMOS: Demo[] = [
-  { username: 'admin',   password: 'admin123',   roleKey: 'role_admin' },
+  { username: 'admin',   password: 'admin 123',   roleKey: 'role_admin' },
   { username: 'manager', password: 'manager123', roleKey: 'role_manager' },
   { username: 'cashier', password: 'cashier123', roleKey: 'role_cashier' },
 ];
