@@ -3,7 +3,7 @@ services:
     name: comma-pos-backend
     runtime: node
     rootDir: POS
-    buildCommand: npm install --legacy-peer-deps && ./node_modules/.bin/nest build
+    buildCommand: npm install && npm run build
     startCommand: npm run start:prod
     envVars:
       - key: NODE_ENV
