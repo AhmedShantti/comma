@@ -13,3 +13,4 @@ POS/dist
 POS/.env
 POS/stdout.log
 POS/stderr.log
+.vercel

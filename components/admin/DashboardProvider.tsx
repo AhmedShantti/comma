@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { api } from '@/lib/api';
+import { mockDashboardData } from '@/lib/mockData';
 import { useAuth } from '../AuthProvider';
 
 type StatCards = {
@@ -79,8 +80,8 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const result = await api.dashboard.stats();
-      setData(result);
+      // Using mock data for demo - replace with api.dashboard.stats() when backend is ready
+      setData(mockDashboardData);
       setError(null);
     } catch (err: any) {
       if (err?.message?.includes('401')) {
