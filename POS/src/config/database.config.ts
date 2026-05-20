@@ -25,6 +25,10 @@ export const databaseConfig = registerAs(
         ...baseConfig,
         url: databaseUrl,
         ssl: isProduction ? { rejectUnauthorized: false } : false,
+        extra: {
+          max: 20,
+          family: 4, // Force IPv4 only connections (fixes IPv6 unreachability issues)
+        },
       } as TypeOrmModuleOptions;
     } else {
       // Fallback to individual env variables (for local development)
