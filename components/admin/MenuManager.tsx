@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
+import { mockCategories, mockMenuItems } from '@/lib/mockData';
 import { useLang } from '../LangProvider';
 import { useAuth } from '../AuthProvider';
 
@@ -434,15 +435,9 @@ export function MenuManager() {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [catsRes, itemsRes] = await Promise.all([
-        api.categories.getAll(),
-        api.menuItems.getAll('limit=100'),
-      ]);
-      // Both endpoints return { data: [...], meta: {...} } (paginated)
-      const cats  = Array.isArray(catsRes)      ? catsRes      : (catsRes?.data  ?? []);
-      const items = Array.isArray(itemsRes)     ? itemsRes     : (itemsRes?.data ?? []);
-      setCategories(cats);
-      setItems(items);
+      // Using mock data for demo - replace with api calls when backend is ready
+      setCategories(mockCategories);
+      setItems(mockMenuItems);
     } catch (e: any) {
       if (e?.response?.status === 401) { await logout(); return; }
     } finally {

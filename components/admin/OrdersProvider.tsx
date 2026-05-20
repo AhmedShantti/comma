@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { mockOrders } from '@/lib/mockData';
 import { useAuth } from '../AuthProvider';
 import type { Order, OrderStatus } from '@/lib/types';
 
@@ -72,9 +73,8 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const refreshOrders = useCallback(async () => {
     try {
       setLoading(true);
-      const data = await api.orders.getAll();
-      const raw: any[] = Array.isArray(data) ? data : (data as any)?.data ?? [];
-      setOrders(raw.map(mapBackendOrder));
+      // Using mock data for demo - replace with api.orders.getAll() when backend is ready
+      setOrders(mockOrders.map(mapBackendOrder));
       setError(null);
     } catch (err: any) {
       if (err?.message?.includes('401') || err?.status === 401) {

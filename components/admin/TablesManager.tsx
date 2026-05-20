@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
+import { mockTables } from '@/lib/mockData';
 import { useLang } from '../LangProvider';
 import { useAuth } from '../AuthProvider';
 import type { Table } from '@/lib/types';
@@ -216,8 +217,8 @@ export function TablesManager() {
     try {
       setLoading(true);
       setError('');
-      const data = await api.tables.getAll();
-      setTables(Array.isArray(data) ? data : data?.data ?? []);
+      // Using mock data for demo - replace with api.tables.getAll() when backend is ready
+      setTables(mockTables as any);
     } catch (e: any) {
       setError(e.message || 'Failed to load tables');
     } finally {
