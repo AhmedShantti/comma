@@ -69,11 +69,12 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isDemoToken = () => {
-    if (typeof window === 'undefined') return false;
-    const token = localStorage.getItem('comma_access_token');
-    return token ? token.startsWith('demo_') : false;
-  };
+  const checkAndLogout = useCallback(async () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('comma_access_token') : null;
+    if (!token?.startsWith('demo_')) {
+      await logout();
+    }
+  }, [logout]);
 
   const refreshOrders = useCallback(async () => {
     try {
@@ -84,9 +85,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
       setError(null);
     } catch (err: any) {
       if (err?.message?.includes('401') || err?.status === 401) {
-        if (!isDemoToken()) {
-          await logout();
-        }
+        await checkAndLogout();
         return;
       }
       setError('Failed to load orders');
@@ -94,7 +93,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [logout]);
+  }, [checkAndLogout]);
 
   useEffect(() => {
     refreshOrders();
@@ -109,15 +108,13 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
         await refreshOrders();
       } catch (err: any) {
         if (err?.message?.includes('401') || err?.status === 401) {
-          if (!isDemoToken()) {
-            await logout();
-          }
+          await checkAndLogout();
           return;
         }
         throw err;
       }
     },
-    [refreshOrders, logout],
+    [refreshOrders, checkAndLogout],
   );
 
   const updateOrderStatus = useCallback(
@@ -127,15 +124,13 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
         await refreshOrders();
       } catch (err: any) {
         if (err?.message?.includes('401') || err?.status === 401) {
-          if (!isDemoToken()) {
-            await logout();
-          }
+          await checkAndLogout();
           return;
         }
         throw err;
       }
     },
-    [refreshOrders, logout],
+    [refreshOrders, checkAndLogout],
   );
 
   const deleteOrder = useCallback(
@@ -145,15 +140,13 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
         await refreshOrders();
       } catch (err: any) {
         if (err?.message?.includes('401') || err?.status === 401) {
-          if (!isDemoToken()) {
-            await logout();
-          }
+          await checkAndLogout();
           return;
         }
         throw err;
       }
     },
-    [refreshOrders, logout],
+    [refreshOrders, checkAndLogout],
   );
 
   return (
