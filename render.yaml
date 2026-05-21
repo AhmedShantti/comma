@@ -22,7 +22,7 @@ services:
         sync: false
       - key: FRONTEND_URL
         value: https://comma-ten-ashen.vercel.app
-      - key: CORS_ORIGIN
+      - key: CORS_ORIGINS
         value: https://comma-ten-ashen.vercel.app
       - key: RESTAURANT_NAME
         value: COMMA Café & Lounge
