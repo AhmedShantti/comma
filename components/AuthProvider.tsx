@@ -45,10 +45,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
             return;
           }
-        } catch {}
+        } catch (e) {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       }
 
       if (accessToken) {
+        // If it's a demo token, don't validate with backend
+        if (accessToken.startsWith('demo_')) {
+          setLoading(false);
+          return;
+        }
+
         try {
           const response = await api.auth.me();
           const userData: Session = {

@@ -84,7 +84,10 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       setError(null);
     } catch (err: any) {
       if (err?.message?.includes('401') || err?.status === 401) {
-        await logout();
+        const token = typeof window !== 'undefined' ? localStorage.getItem('comma_access_token') : null;
+        if (token && !token.startsWith('demo_')) {
+          await logout();
+        }
         return;
       }
       setError('Failed to load dashboard data');
