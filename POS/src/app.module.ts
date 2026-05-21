@@ -24,6 +24,7 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { HealthController } from './health.controller';
+import { SeedingService } from './database/seeding.service';
 
 @Module({
   imports: [
@@ -83,5 +84,6 @@ import { HealthController } from './health.controller';
     SettingsModule,
   ],
   controllers: [HealthController],
+  providers: [SeedingService],
 })
 export class AppModule {}
