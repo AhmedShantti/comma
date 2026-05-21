@@ -2,12 +2,15 @@ import type { Localized, UIKey } from './i18n';
 export type { Localized } from './i18n';
 
 export type CategorySlug =
+  | 'appetizers'
+  | 'main-courses'
+  | 'beverages'
+  | 'desserts'
   | 'coffees'
   | 'hot-drinks'
   | 'cold-drinks'
   | 'fresh-juices'
   | 'smoothies'
-  | 'desserts'
   | 'shisha'
   | 'snacks';
 
