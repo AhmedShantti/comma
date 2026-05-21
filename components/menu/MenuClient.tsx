@@ -50,9 +50,14 @@ export function MenuClient() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Using mock data for demo - replace with api calls when backend is ready
-        const rawCats = mockCategories;
-        const rawItems = mockMenuItems;
+        const [catsRes, itemsRes] = await Promise.all([
+          api.categories.getAll('limit=100'),
+          api.menuItems.getAll('limit=100&is_active=true'),
+        ]);
+
+        // Unwrap paginated envelope: { data: [...], meta: {...} }
+        const rawCats  = Array.isArray(catsRes)  ? catsRes  : (catsRes?.data  ?? []);
+        const rawItems = Array.isArray(itemsRes) ? itemsRes : (itemsRes?.data ?? []);
 
         // Map backend category shape → frontend shape
         // Create id->slug mapping from backend categories

@@ -80,11 +80,11 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      // Using mock data for demo - replace with api.dashboard.stats() when backend is ready
-      setData(mockDashboardData);
+      const result = await api.dashboard.stats();
+      setData(result);
       setError(null);
     } catch (err: any) {
-      if (err?.message?.includes('401')) {
+      if (err?.message?.includes('401') || err?.status === 401) {
         await logout();
         return;
       }

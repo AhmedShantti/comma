@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { mockTables } from '@/lib/mockData';
 import { useLang } from '../LangProvider';
 import { useAuth } from '../AuthProvider';
 import type { Table } from '@/lib/types';
@@ -217,8 +216,8 @@ export function TablesManager() {
     try {
       setLoading(true);
       setError('');
-      // Using mock data for demo - replace with api.tables.getAll() when backend is ready
-      setTables(mockTables as any);
+      const result = await api.tables.getAll();
+      setTables(result);
     } catch (e: any) {
       setError(e.message || 'Failed to load tables');
     } finally {

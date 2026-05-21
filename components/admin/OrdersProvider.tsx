@@ -2,7 +2,6 @@
 
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { api } from '@/lib/api';
-import { mockOrders } from '@/lib/mockData';
 import { useAuth } from '../AuthProvider';
 import type { Order, OrderStatus } from '@/lib/types';
 
@@ -73,8 +72,9 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const refreshOrders = useCallback(async () => {
     try {
       setLoading(true);
-      // Using mock data for demo - replace with api.orders.getAll() when backend is ready
-      setOrders(mockOrders.map(mapBackendOrder));
+      const result = await api.orders.getAll();
+      const ordersArr = Array.isArray(result) ? result : (result?.data ?? []);
+      setOrders(ordersArr.map(mapBackendOrder));
       setError(null);
     } catch (err: any) {
       if (err?.message?.includes('401') || err?.status === 401) {
