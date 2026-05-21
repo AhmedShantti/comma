@@ -8,6 +8,8 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        value: --dns-result-order=ipv4first
       - key: API_PREFIX
         value: api/v1
       - key: PORT
