@@ -30,7 +30,13 @@ const config: any = {
 };
 
 if (databaseUrl) {
-  config.url = databaseUrl;
+  // Parse URL to extract components and avoid IPv6 resolution issues
+  const url = new URL(databaseUrl);
+  config.host = url.hostname;
+  config.port = parseInt(url.port || '5432');
+  config.username = url.username || 'postgres';
+  config.password = url.password || '';
+  config.database = url.pathname?.slice(1) || 'postgres';
   config.ssl = isProduction ? { rejectUnauthorized: false } : false;
   // Force IPv4 to avoid ENETUNREACH on Render with Supabase IPv6
   config.extra = { max: 20, family: 4 };
