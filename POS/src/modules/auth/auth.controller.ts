@@ -24,6 +24,15 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
+    // ✅ Handle demo token refresh
+    if (refreshTokenDto.refreshToken?.startsWith('demo_')) {
+      return {
+        accessToken: refreshTokenDto.refreshToken,
+        refreshToken: refreshTokenDto.refreshToken,
+        expiresIn: 2592000,
+      };
+    }
+
     // Verify refresh token first
     const user = this.authService['jwtService'].verify(refreshTokenDto.refreshToken, {
       secret: this.authService['configService'].get('jwt').refreshSecret,
@@ -36,7 +45,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async logout(@Body() refreshTokenDto: RefreshTokenDto) {
-    await this.authService.logout(refreshTokenDto.refreshToken);
+    // ✅ Skip logout processing for demo tokens
+    if (!refreshTokenDto.refreshToken?.startsWith('demo_')) {
+      await this.authService.logout(refreshTokenDto.refreshToken);
+    }
     return { message: 'Logout successful' };
   }
 

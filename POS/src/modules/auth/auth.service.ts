@@ -18,6 +18,28 @@ export class AuthService {
   ) {}
 
   async login(loginDto: LoginDto): Promise<{ user: User; tokens: TokensDto }> {
+    // ✅ Handle demo account locally (no DB check)
+    if (loginDto.username === 'admin' && loginDto.password === 'admin 123') {
+      const demoUser: Partial<User> = {
+        id: 'demo-admin-1',
+        username: 'admin',
+        full_name: 'Admin User',
+        role: 'admin' as any,
+        email: 'admin@demo.local',
+        is_active: true,
+      };
+
+      const demoToken = 'demo_' + Date.now();
+      return {
+        user: demoUser as User,
+        tokens: {
+          accessToken: demoToken,
+          refreshToken: demoToken,
+          expiresIn: 2592000, // 30 days
+        },
+      };
+    }
+
     const user = await this.usersService.findByUsername(loginDto.username);
 
     if (!user) {
