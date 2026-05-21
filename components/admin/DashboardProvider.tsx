@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { api } from '@/lib/api';
-import { mockDashboardData } from '@/lib/mockData';
 import { useAuth } from '../AuthProvider';
 
 type StatCards = {

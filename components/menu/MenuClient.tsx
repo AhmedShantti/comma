@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
-import { mockCategories, mockMenuItems } from '@/lib/mockData';
 import type { CategoryFilter, MenuItem, CategorySlug, Localized } from '@/lib/types';
 import { useLang } from '../LangProvider';
 import { pluralizeItems } from '@/lib/i18n';
