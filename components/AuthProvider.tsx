@@ -51,12 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (accessToken) {
-        // If it's a demo token, don't validate with backend
-        if (accessToken.startsWith('demo_')) {
-          setLoading(false);
-          return;
-        }
-
         try {
           const response = await api.auth.me();
           const userData: Session = {
@@ -86,24 +80,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (username: string, password: string) => {
     try {
-      // Demo login - handle locally without API call
-      if (username === 'admin' && password === 'admin 123') {
-        const demoToken = 'demo_' + Date.now();
-        localStorage.setItem(ACCESS_TOKEN_KEY, demoToken);
-        localStorage.setItem(REFRESH_TOKEN_KEY, demoToken);
-
-        const userData: Session = {
-          username: 'admin',
-          role: 'admin',
-          name: { en: 'Admin User', ar: 'مسؤول' },
-          id: 'demo-admin-1',
-        };
-        setUser(userData);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
-        return true;
-      }
-
-      // Try API login for other accounts
       const response = await api.auth.login({ username, password });
 
       // Backend returns: { user: { id, username, role, full_name, ... }, tokens: { accessToken, refreshToken, expiresIn } }

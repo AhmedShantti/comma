@@ -3,10 +3,12 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { seedDatabase } from './database/seeds/seed-data';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -46,6 +48,18 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
+
+  // Run database seeding
+  const dataSource = app.get(DataSource);
+  if (dataSource) {
+    try {
+      logger.log('🌱 Starting database seeding...');
+      await seedDatabase(dataSource);
+      logger.log('✅ Database seeding completed');
+    } catch (err) {
+      logger.error('❌ Database seeding failed:', err);
+    }
+  }
 
   const port = configService.get('PORT') || 3000;
   await app.listen(port, '0.0.0.0');

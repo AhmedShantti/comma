@@ -70,10 +70,7 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<string | null>(null);
 
   const checkAndLogout = useCallback(async () => {
-    const token = typeof window !== 'undefined' ? localStorage.getItem('comma_access_token') : null;
-    if (!token?.startsWith('demo_')) {
-      await logout();
-    }
+    await logout();
   }, [logout]);
 
   const refreshOrders = useCallback(async () => {
