@@ -25,7 +25,10 @@ export function MenuCard({ item, index, onClick }: Props) {
   return (
     <article
       className="menu-card"
-      onClick={() => onClick?.(item.id)}
+      onClick={() => {
+        console.log('[MenuCard] Clicked item:', item.id, 'onClick handler:', !!onClick);
+        onClick?.(item.id);
+      }}
       style={{
         animationDelay: `${index * 0.045}s`,
         cursor: onClick ? 'pointer' : 'default',

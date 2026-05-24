@@ -23,6 +23,13 @@ interface MenuClientProps {
 
 export function MenuClient({ tableId }: MenuClientProps) {
   const { lang, t } = useLang();
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[MenuClient] Rendered with tableId:', tableId);
+    console.log('[MenuClient] Should show cart UI:', !!tableId);
+  }, [tableId]);
+
   const [activeCat, setActiveCat] = useState<string>('all');
   const [searchInput, setSearchInput] = useState('');
   const [searchQ, setSearchQ] = useState('');

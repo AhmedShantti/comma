@@ -21,12 +21,14 @@ export default function MenuPage({ params }: MenuPageProps) {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    console.log('[MenuPage] Mounted with tableId:', params.tableId);
     const fetchTable = async () => {
       try {
         setLoading(true);
         setError('');
 
         const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+        console.log('[MenuPage] Fetching table from:', `${baseUrl}/api/v1/tables/${params.tableId}`);
         const res = await fetch(`${baseUrl}/api/v1/tables/${params.tableId}`);
 
         if (!res.ok) {
