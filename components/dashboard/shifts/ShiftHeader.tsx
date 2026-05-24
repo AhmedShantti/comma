@@ -79,15 +79,18 @@ export function ShiftHeader({ currentShift, onOpenShift, onCloseShift }: ShiftHe
         )}
         <button
           onClick={onOpenShift}
+          disabled={!!currentShift}
+          title={currentShift ? 'Close your current shift first' : 'Open a new shift'}
           style={{
             padding: `8px 18px`,
             borderRadius: BORDER_RADIUS.full,
-            background: COLORS.gold,
-            color: '#111',
+            background: currentShift ? COLORS.textDim : COLORS.gold,
+            color: currentShift ? COLORS.textMuted : '#111',
             border: 'none',
             fontWeight: 600,
-            cursor: 'pointer',
+            cursor: currentShift ? 'not-allowed' : 'pointer',
             fontSize: FONT_SIZES.lg,
+            opacity: currentShift ? 0.5 : 1,
           }}
         >
           + Open Shift

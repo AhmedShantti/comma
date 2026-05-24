@@ -158,7 +158,11 @@ export default function ShiftsPage() {
 
       {/* Modals */}
       {modal === 'open' && (
-        <OpenShiftDialog onClose={handleModalClose} onSuccess={handleSuccess} />
+        <OpenShiftDialog
+          onClose={handleModalClose}
+          onSuccess={handleSuccess}
+          hasActiveShift={!!currentShift}
+        />
       )}
       {modal === 'close' && currentShift && (
         <CloseShiftDialog

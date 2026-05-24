@@ -9,9 +9,41 @@ import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from './constants';
 interface OpenShiftDialogProps {
   onClose: () => void;
   onSuccess: () => void;
+  hasActiveShift?: boolean;
 }
 
-export function OpenShiftDialog({ onClose, onSuccess }: OpenShiftDialogProps) {
+export function OpenShiftDialog({ onClose, onSuccess, hasActiveShift }: OpenShiftDialogProps) {
+  if (hasActiveShift) {
+    return (
+      <Modal onClose={onClose} title="Cannot Open Shift">
+        <p
+          style={{
+            color: COLORS.textMuted,
+            fontSize: FONT_SIZES.lg,
+            marginBottom: SPACING.lg,
+            lineHeight: 1.5,
+          }}
+        >
+          You already have an active shift open. Please close your current shift before opening a new one.
+        </p>
+        <button
+          onClick={onClose}
+          style={{
+            width: '100%',
+            padding: `${SPACING.sm - 1}px 0`,
+            borderRadius: BORDER_RADIUS.md,
+            border: `1px solid ${COLORS.textBorder}`,
+            background: 'transparent',
+            color: COLORS.textMuted,
+            cursor: 'pointer',
+            fontSize: FONT_SIZES.lg,
+          }}
+        >
+          Close
+        </button>
+      </Modal>
+    );
+  }
   const [cash, setCash] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
