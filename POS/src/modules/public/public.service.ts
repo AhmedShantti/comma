@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Order, OrderItem, OrderItemAddOn } from '../orders/entities/order.entity';
 import { CreateCustomerOrderDto } from './dto/create-customer-order.dto';
 import { TablesService } from '../tables/tables.service';
@@ -20,6 +20,7 @@ export class PublicService {
     private tablesService: TablesService,
     private menuItemsService: MenuItemsService,
     private addonsService: AddonsService,
+    private dataSource: DataSource,
   ) {}
 
   async getTable(tableId: string) {
@@ -184,19 +185,22 @@ export class PublicService {
   }
 
   private async generateOrderNumber(): Promise<string> {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    return await this.dataSource.transaction('SERIALIZABLE', async (manager) => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    const todayStr = today.toISOString().split('T')[0].replace(/-/g, '');
+      const todayStr = today.toISOString().split('T')[0].replace(/-/g, '');
 
-    // Count orders created since midnight today
-    const count = await this.ordersRepository.count({
-      where: {
-        created_at: MoreThanOrEqual(today),
-      },
+      // Lock rows with pessimistic write lock to prevent race conditions
+      const rows = await manager
+        .createQueryBuilder(Order, 'order')
+        .select('order.id')
+        .where('order.created_at >= :today', { today })
+        .setLock('pessimistic_write')
+        .getMany();
+
+      return `ORD-${todayStr}-${String(rows.length + 1).padStart(4, '0')}`;
     });
-
-    return `ORD-${todayStr}-${String(count + 1).padStart(4, '0')}`;
   }
 
   private async findOrderById(id: string): Promise<Order> {
