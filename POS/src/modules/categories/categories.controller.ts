@@ -9,9 +9,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 
 @ApiTags('categories')
-@ApiBearerAuth()
 @Controller('categories')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class CategoriesController {
   constructor(private readonly categoriesService: CategoriesService) {}
 
@@ -22,6 +20,8 @@ export class CategoriesController {
   }
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   create(@Body() createCategoryDto: CreateCategoryDto) {
     return this.categoriesService.create(createCategoryDto);
@@ -33,6 +33,8 @@ export class CategoriesController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   update(
     @Param('id') id: string,
@@ -42,6 +44,8 @@ export class CategoriesController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   remove(@Param('id') id: string) {
     return this.categoriesService.softDelete(id);

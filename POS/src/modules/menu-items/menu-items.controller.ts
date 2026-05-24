@@ -9,9 +9,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 
 @ApiTags('menu-items')
-@ApiBearerAuth()
 @Controller('menu-items')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class MenuItemsController {
   constructor(private readonly menuItemsService: MenuItemsService) {}
 
@@ -27,6 +25,8 @@ export class MenuItemsController {
   }
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   create(@Body() createMenuItemDto: CreateMenuItemDto) {
     return this.menuItemsService.create(createMenuItemDto);
@@ -38,6 +38,8 @@ export class MenuItemsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   update(
     @Param('id') id: string,
@@ -47,12 +49,16 @@ export class MenuItemsController {
   }
 
   @Patch(':id/availability')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   toggleAvailability(@Param('id') id: string) {
     return this.menuItemsService.toggleAvailability(id);
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   remove(@Param('id') id: string) {
     return this.menuItemsService.softDelete(id);

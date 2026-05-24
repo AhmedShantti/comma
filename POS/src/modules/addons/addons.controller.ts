@@ -9,9 +9,7 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import { UserRole } from '../../common/enums/user-role.enum';
 
 @ApiTags('addons')
-@ApiBearerAuth()
 @Controller('addons')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class AddonsController {
   constructor(private readonly addonsService: AddonsService) {}
 
@@ -21,12 +19,16 @@ export class AddonsController {
   }
 
   @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   create(@Body() createAddonDto: CreateAddonDto) {
     return this.addonsService.create(createAddonDto);
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   update(
     @Param('id') id: string,
@@ -36,6 +38,8 @@ export class AddonsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   remove(@Param('id') id: string) {
     return this.addonsService.softDelete(id);
