@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { publicApi } from '@/lib/public-api';
 import { CartItem } from '@/hooks/useCart';
 import { useLang } from '../LangProvider';
 
@@ -55,18 +56,12 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
       setError('');
       try {
         // Fetch menu item details
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1/menu-items/${itemId}`);
-        if (!res.ok) throw new Error('Failed to fetch item');
-        const itemData: MenuItemFull = await res.json();
+        const itemData: MenuItemFull = await publicApi.menuItems.getById(itemId);
         setItem(itemData);
 
         // Fetch all addons
-        const addonsRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/v1/addons?limit=100`);
-        if (addonsRes.ok) {
-          const addonsData = await addonsRes.json();
-          const addonsList = Array.isArray(addonsData) ? addonsData : addonsData?.data ?? [];
-          setAllAddons(addonsList.filter((a: Addon) => a.is_active));
-        }
+        const addonsList: Addon[] = await publicApi.addons.getAll();
+        setAllAddons(addonsList.filter((a: Addon) => a.is_active));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load item');
       } finally {

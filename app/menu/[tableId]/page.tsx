@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { publicApi } from '@/lib/public-api';
 import { MenuClient } from '@/components/menu/MenuClient';
 
 interface Table {
@@ -27,24 +28,17 @@ export default function MenuPage({ params }: MenuPageProps) {
         setLoading(true);
         setError('');
 
-        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-        console.log('[MenuPage] Fetching table from:', `${baseUrl}/api/v1/tables/${params.tableId}`);
-        const res = await fetch(`${baseUrl}/api/v1/tables/${params.tableId}`);
-
-        if (!res.ok) {
-          if (res.status === 404) {
-            setError('Table not found. Please check the QR code and try again.');
-          } else {
-            setError('Failed to load table information.');
-          }
-          setTable(null);
-          return;
-        }
-
-        const data: Table = await res.json();
+        console.log('[MenuPage] Fetching table from public endpoint');
+        const data: Table = await publicApi.tables.getById(params.tableId);
         setTable(data);
       } catch (err) {
-        setError('Unable to connect to the server. Please try again.');
+        const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+        console.error('[MenuPage] Error fetching table:', errorMsg);
+        if (errorMsg.includes('404')) {
+          setError('Table not found. Please check the QR code and try again.');
+        } else {
+          setError('Unable to load table. Please try again.');
+        }
         setTable(null);
       } finally {
         setLoading(false);

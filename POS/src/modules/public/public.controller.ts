@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Ip, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Ip, HttpCode, HttpStatus } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { PublicService } from './public.service';
 import { CreateCustomerOrderDto } from './dto/create-customer-order.dto';
@@ -6,6 +6,12 @@ import { CreateCustomerOrderDto } from './dto/create-customer-order.dto';
 @Controller('public')
 export class PublicController {
   constructor(private publicService: PublicService) {}
+
+  @Get('tables/:id')
+  async getTable(@Param('id') tableId: string) {
+    const table = await this.publicService.getTable(tableId);
+    return table;
+  }
 
   @Post('orders')
   @HttpCode(HttpStatus.CREATED)

@@ -22,6 +22,18 @@ export class PublicService {
     private addonsService: AddonsService,
   ) {}
 
+  async getTable(tableId: string) {
+    const table = await this.tablesService.findById(tableId);
+    if (!table) {
+      throw new NotFoundException('Table not found');
+    }
+    return {
+      id: table.id,
+      table_number: table.table_number,
+      capacity: table.capacity,
+    };
+  }
+
   async createCustomerOrder(dto: CreateCustomerOrderDto): Promise<Order> {
     // Validate table exists
     const table = await this.tablesService.findById(dto.tableId);
