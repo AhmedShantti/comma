@@ -229,7 +229,7 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
                         }}
                       >
                         {v.name}
-                        {v.price_adjustment > 0 && ` +$${v.price_adjustment.toFixed(2)}`}
+                        {Number(v.price_adjustment) > 0 && ` +$${Number(v.price_adjustment).toFixed(2)}`}
                       </button>
                     ))}
                   </div>
@@ -276,7 +276,7 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
                           />
                           <span style={{ flex: 1, color: '#e8e0d0', fontSize: '13px' }}>{addonName}</span>
                           <span style={{ color: '#c9a84c', fontSize: '12px', fontWeight: 600 }}>
-                            +${addon.price.toFixed(2)}
+                            +${Number(addon.price).toFixed(2)}
                           </span>
                         </label>
                       );
