@@ -27,7 +27,8 @@ export class Shift {
   })
   status: ShiftStatus;
 
-  @CreateDateColumn()
+  // ✅ Fixed: was @CreateDateColumn() which duplicated created_at
+  @Column({ default: () => 'CURRENT_TIMESTAMP' })
   opened_at: Date;
 
   @Column({ nullable: true })
