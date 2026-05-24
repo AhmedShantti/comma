@@ -37,6 +37,11 @@ export class MenuItemsController {
     return this.menuItemsService.findById(id);
   }
 
+  @Get(':id/addons')
+  getAddons(@Param('id') id: string) {
+    return this.menuItemsService.getItemAddons(id);
+  }
+
   @Patch(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
@@ -62,5 +67,32 @@ export class MenuItemsController {
   @Roles(UserRole.ADMIN, UserRole.MANAGER)
   remove(@Param('id') id: string) {
     return this.menuItemsService.softDelete(id);
+  }
+
+  @Patch(':id/addons')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  setAddons(
+    @Param('id') id: string,
+    @Body() body: { addon_ids: string[] },
+  ) {
+    return this.menuItemsService.setAddons(id, body.addon_ids);
+  }
+
+  @Post(':id/addons/:addon_id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  addAddon(@Param('id') id: string, @Param('addon_id') addonId: string) {
+    return this.menuItemsService.addAddon(id, addonId);
+  }
+
+  @Delete(':id/addons/:addon_id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.MANAGER)
+  removeAddon(@Param('id') id: string, @Param('addon_id') addonId: string) {
+    return this.menuItemsService.removeAddon(id, addonId);
   }
 }

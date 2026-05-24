@@ -44,7 +44,8 @@ export class MenuItemsService {
 
   async findAll(pagination: PaginationDto, categoryId?: string, isActive?: boolean) {
     const query = this.menuItemsRepository.createQueryBuilder('item')
-      .leftJoinAndSelect('item.variants', 'variants');
+      .leftJoinAndSelect('item.variants', 'variants')
+      .leftJoinAndSelect('item.addons', 'addons');
 
     if (categoryId) {
       query.andWhere('item.category_id = :categoryId', { categoryId });
@@ -76,7 +77,7 @@ export class MenuItemsService {
   async findById(id: string): Promise<MenuItem> {
     const item = await this.menuItemsRepository.findOne({
       where: { id },
-      relations: ['variants'],
+      relations: ['variants', 'addons'],
     });
 
     if (!item) {
@@ -112,5 +113,67 @@ export class MenuItemsService {
       id: item.id,
       available: item.is_active,
     }));
+  }
+
+  async setAddons(id: string, addonIds: string[]): Promise<MenuItem> {
+    const item = await this.menuItemsRepository.findOne({
+      where: { id },
+      relations: ['addons'],
+    });
+
+    if (!item) {
+      throw new NotFoundException('Menu item not found');
+    }
+
+    // Clear existing addons and set new ones
+    item.addons = [];
+    await this.menuItemsRepository.save(item);
+
+    if (addonIds && addonIds.length > 0) {
+      // Reload with new addons via query builder
+      await this.menuItemsRepository
+        .createQueryBuilder('item')
+        .relation(MenuItem, 'addons')
+        .of(id)
+        .add(addonIds);
+    }
+
+    return this.findById(id);
+  }
+
+  async addAddon(id: string, addonId: string): Promise<MenuItem> {
+    const item = await this.menuItemsRepository.findOne({
+      where: { id },
+      relations: ['addons'],
+    });
+
+    if (!item) {
+      throw new NotFoundException('Menu item not found');
+    }
+
+    await this.menuItemsRepository
+      .createQueryBuilder('item')
+      .relation(MenuItem, 'addons')
+      .of(id)
+      .add(addonId);
+
+    return this.findById(id);
+  }
+
+  async removeAddon(id: string, addonId: string): Promise<MenuItem> {
+    const item = await this.findById(id);
+
+    await this.menuItemsRepository
+      .createQueryBuilder('item')
+      .relation(MenuItem, 'addons')
+      .of(id)
+      .remove(addonId);
+
+    return this.findById(id);
+  }
+
+  async getItemAddons(id: string): Promise<any[]> {
+    const item = await this.findById(id);
+    return item.addons || [];
   }
 }

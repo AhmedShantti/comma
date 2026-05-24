@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, ManyToOne, JoinColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
 import { Category } from '../../categories/entities/category.entity';
+import { Addon } from '../../addons/entities/addon.entity';
 
 @Entity('menu_items')
 export class MenuItem {
@@ -42,6 +43,14 @@ export class MenuItem {
 
   @OneToMany(() => Variant, v => v.menuItem, { cascade: true })
   variants: Variant[];
+
+  @ManyToMany(() => Addon, { cascade: true })
+  @JoinTable({
+    name: 'menu_item_addons',
+    joinColumn: { name: 'menu_item_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'addon_id', referencedColumnName: 'id' },
+  })
+  addons: Addon[];
 
   @CreateDateColumn()
   created_at: Date;

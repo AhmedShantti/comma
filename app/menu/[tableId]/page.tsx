@@ -28,16 +28,26 @@ export default function MenuPage({ params }: MenuPageProps) {
         setLoading(true);
         setError('');
 
-        console.log('[MenuPage] Fetching table from public endpoint');
+        if (!params.tableId) {
+          setError('Invalid table ID');
+          setTable(null);
+          setLoading(false);
+          return;
+        }
+
+        console.log('[MenuPage] Fetching table from public endpoint:', `/api/v1/public/tables/${params.tableId}`);
         const data: Table = await publicApi.tables.getById(params.tableId);
+        console.log('[MenuPage] Table loaded successfully:', data);
         setTable(data);
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown error';
         console.error('[MenuPage] Error fetching table:', errorMsg);
-        if (errorMsg.includes('404')) {
+        if (errorMsg.includes('404') || errorMsg.includes('not found')) {
           setError('Table not found. Please check the QR code and try again.');
+        } else if (errorMsg.includes('401') || errorMsg.includes('Unauthorized')) {
+          setError('Access denied. Please try again later.');
         } else {
-          setError('Unable to load table. Please try again.');
+          setError(`Unable to load table: ${errorMsg}`);
         }
         setTable(null);
       } finally {

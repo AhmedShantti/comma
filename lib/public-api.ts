@@ -45,6 +45,9 @@ export const publicApi = {
 
     getAll: (qs?: string) =>
       request(`/api/v1/menu-items${qs ? `?${qs}` : ''}`),
+
+    getAddons: (menuItemId: string) =>
+      request(`/api/v1/menu-items/${menuItemId}/addons`),
   },
 
   // ================= PUBLIC ADDONS =================

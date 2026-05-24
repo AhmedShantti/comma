@@ -14,6 +14,7 @@ interface MenuItem {
   is_active: boolean;
   category_id: string;
   variants?: Array<{ id: string; name: string; price_adjustment: number }>;
+  addons?: Array<{ id: string; name_en: string; name_ar: string; price: number; is_active: boolean }>;
 }
 
 interface Category {
@@ -44,7 +45,7 @@ interface ItemForm {
 interface AdminItemModalProps {
   item: MenuItem | null;
   categories: Category[];
-  onSave: (form: ItemForm) => Promise<void>;
+  onSave: (form: ItemForm, selectedAddonIds?: string[]) => Promise<void>;
   onClose: () => void;
 }
 
@@ -79,7 +80,9 @@ export function AdminItemModal({ item, categories, onSave, onClose }: AdminItemM
     item?.variants ?? []
   );
   const [allAddons, setAllAddons] = useState<Addon[]>([]);
-  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [selectedAddons, setSelectedAddons] = useState<string[]>(
+    item?.addons?.map((a: any) => a.id) ?? []
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [loadingAddons, setLoadingAddons] = useState(true);
@@ -115,7 +118,7 @@ export function AdminItemModal({ item, categories, onSave, onClose }: AdminItemM
     try {
       setSaving(true);
       setError('');
-      await onSave(form);
+      await onSave(form, selectedAddons);
     } catch (e: any) {
       setError(e.message || 'Failed to save item.');
       setSaving(false);

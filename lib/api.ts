@@ -171,6 +171,22 @@ export const api = {
 
     availability: () =>
       request("/api/v1/menu-items/availability"),
+
+    setAddons: (id: string, addonIds: string[]) =>
+      request(`/api/v1/menu-items/${id}/addons`, {
+        method: "PATCH",
+        body: JSON.stringify({ addon_ids: addonIds }),
+      }),
+
+    addAddon: (id: string, addonId: string) =>
+      request(`/api/v1/menu-items/${id}/addons/${addonId}`, {
+        method: "POST",
+      }),
+
+    removeAddon: (id: string, addonId: string) =>
+      request(`/api/v1/menu-items/${id}/addons/${addonId}`, {
+        method: "DELETE",
+      }),
   },
 
   // ================= ADDONS =================

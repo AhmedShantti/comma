@@ -59,9 +59,9 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
         const itemData: MenuItemFull = await publicApi.menuItems.getById(itemId);
         setItem(itemData);
 
-        // Fetch all addons
-        const addonsList: Addon[] = await publicApi.addons.getAll();
-        setAllAddons(addonsList.filter((a: Addon) => a.is_active));
+        // Fetch addons assigned to this specific item
+        const addonsList: Addon[] = await publicApi.menuItems.getAddons(itemId);
+        setAllAddons(Array.isArray(addonsList) ? addonsList.filter((a: Addon) => a.is_active) : []);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load item');
       } finally {

@@ -295,7 +295,7 @@ export function MenuManager() {
   );
 
   // ── Item CRUD ──────────────────────────────────────────────────────────────
-  async function handleSaveItem(form: ItemForm) {
+  async function handleSaveItem(form: ItemForm, selectedAddonIds?: string[]) {
     const payload = {
       name_en: form.name_en.trim(),
       name_ar: form.name_ar.trim(),
@@ -309,8 +309,16 @@ export function MenuManager() {
 
     if (editingItem) {
       await api.menuItems.update(editingItem.id, payload);
+      // Save selected addons
+      if (selectedAddonIds) {
+        await api.menuItems.setAddons(editingItem.id, selectedAddonIds);
+      }
     } else {
-      await api.menuItems.create(payload);
+      const created = await api.menuItems.create(payload);
+      // Save selected addons for new item
+      if (selectedAddonIds) {
+        await api.menuItems.setAddons(created.id, selectedAddonIds);
+      }
     }
     setShowItemModal(false);
     setEditingItem(null);
