@@ -298,15 +298,17 @@ export class OrdersService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const count = await manager
+    // Lock rows first, then count — PostgreSQL doesn't allow FOR UPDATE with COUNT()
+    const rows = await manager
       .createQueryBuilder(Order, 'order')
+      .select('order.id')
       .where('order.created_at >= :today', { today })
       .setLock('pessimistic_write')
-      .getCount();
+      .getMany();
 
-    return `#${String(count + 1).padStart(3, '0')}`;
-    });
-  }
+    return `#${String(rows.length + 1).padStart(3, '0')}`;
+  });
+}
 
   async findById(id: string): Promise<Order> {
     const order = await this.ordersRepository.findOne({
