@@ -15,6 +15,9 @@ export class Order {
   @Column({ type: 'enum', enum: OrderType })
   type: OrderType;
 
+  @Column({ default: 'pos' })
+  source: 'pos' | 'self_order';
+
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.OPEN })
   status: OrderStatus;
 
@@ -71,14 +74,14 @@ export class Order {
   @JoinColumn({ name: 'cashier_id' })
   cashier: User;
 
-  @Column()
+  @Column({ nullable: true })
   cashier_id: string;
 
   @ManyToOne(() => Shift)
   @JoinColumn({ name: 'shift_id' })
   shift: Shift;
 
-  @Column()
+  @Column({ nullable: true })
   shift_id: string;
 
   @Column({ nullable: true })

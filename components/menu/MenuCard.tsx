@@ -4,7 +4,7 @@ import type { MenuItem } from '@/lib/types';
 import { UI } from '@/lib/i18n';
 import { useLang } from '../LangProvider';
 
-type Props = { item: MenuItem; index: number };
+type Props = { item: MenuItem; index: number; onClick?: (itemId: string) => void };
 
 const CAT_KEY: Record<MenuItem['cat'], keyof typeof UI> = {
   'appetizers': 'cat_appetizers',
@@ -20,10 +20,28 @@ const CAT_KEY: Record<MenuItem['cat'], keyof typeof UI> = {
   'snacks': 'cat_snacks',
 };
 
-export function MenuCard({ item, index }: Props) {
+export function MenuCard({ item, index, onClick }: Props) {
   const { lang, t } = useLang();
   return (
-    <article className="menu-card" style={{ animationDelay: `${index * 0.045}s` }}>
+    <article
+      className="menu-card"
+      onClick={() => onClick?.(item.id)}
+      style={{
+        animationDelay: `${index * 0.045}s`,
+        cursor: onClick ? 'pointer' : 'default',
+        transition: 'transform 0.2s ease',
+      }}
+      onMouseEnter={e => {
+        if (onClick) {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)';
+        }
+      }}
+      onMouseLeave={e => {
+        if (onClick) {
+          (e.currentTarget as HTMLElement).style.transform = 'translateY(0)';
+        }
+      }}
+    >
       <div className="card-img-wrap">
         {item.img ? (
           <>

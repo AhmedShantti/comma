@@ -13,6 +13,7 @@ import { redisConfig } from './config/redis.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ShiftsModule } from './modules/shifts/shifts.module';
+import { PublicModule } from './modules/public/public.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { MenuItemsModule } from './modules/menu-items/menu-items.module';
 import { AddonsModule } from './modules/addons/addons.module';
@@ -72,6 +73,7 @@ import { SeedingService } from './database/seeding.service';
     AuthModule,
     UsersModule,
     ShiftsModule,
+    PublicModule,
     CategoriesModule,
     MenuItemsModule,
     AddonsModule,

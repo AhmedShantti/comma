@@ -6,6 +6,10 @@ import type { CategoryFilter, MenuItem, CategorySlug, Localized } from '@/lib/ty
 import { useLang } from '../LangProvider';
 import { pluralizeItems } from '@/lib/i18n';
 import { MenuCard } from './MenuCard';
+import { CartBar } from './CartBar';
+import { CartDrawer } from './CartDrawer';
+import { CustomerItemModal } from './CustomerItemModal';
+import { useCart, CartItem } from '@/hooks/useCart';
 
 type FrontendCategory = {
   id?: string;
@@ -13,7 +17,11 @@ type FrontendCategory = {
   name: Localized;
 };
 
-export function MenuClient() {
+interface MenuClientProps {
+  tableId?: string;
+}
+
+export function MenuClient({ tableId }: MenuClientProps) {
   const { lang, t } = useLang();
   const [activeCat, setActiveCat] = useState<string>('all');
   const [searchInput, setSearchInput] = useState('');
@@ -21,6 +29,12 @@ export function MenuClient() {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<FrontendCategory[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Cart state (only if tableId is provided)
+  const cart = useCart();
+  const [cartOpen, setCartOpen] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState<string | undefined>();
+  const [itemModalOpen, setItemModalOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setSearchQ(searchInput), 220);
@@ -206,11 +220,57 @@ export function MenuClient() {
                 <button className="btn-ghost" onClick={clearFilters}>{t('clear_filters')}</button>
               </div>
             ) : (
-              filteredItems.map((item, i) => <MenuCard key={item.id} item={item} index={i} />)
+              filteredItems.map((item, i) => (
+                <MenuCard
+                  key={item.id}
+                  item={item}
+                  index={i}
+                  onClick={tableId ? (itemId) => {
+                    setSelectedItemId(itemId);
+                    setItemModalOpen(true);
+                  } : undefined}
+                />
+              ))
             )}
           </div>
         </div>
       </section>
+
+      {/* Cart UI (only show if tableId is provided) */}
+      {tableId && (
+        <>
+          <CartBar
+            totalItems={cart.totalItems}
+            totalAmount={cart.totalAmount}
+            onOpenCart={() => setCartOpen(true)}
+            hidden={cart.items.length === 0}
+          />
+          <CartDrawer
+            isOpen={cartOpen}
+            onClose={() => setCartOpen(false)}
+            items={cart.items}
+            tableId={tableId}
+            totalAmount={cart.totalAmount}
+            onRemoveItem={cart.removeItem}
+            onUpdateQuantity={cart.updateQuantity}
+            onClearCart={cart.clearCart}
+          />
+          <CustomerItemModal
+            isOpen={itemModalOpen}
+            onClose={() => {
+              setItemModalOpen(false);
+              setSelectedItemId(undefined);
+            }}
+            itemId={selectedItemId}
+            onAddToCart={(item) => {
+              cart.addItem(item);
+              setItemModalOpen(false);
+              // Optionally open cart drawer
+              setCartOpen(true);
+            }}
+          />
+        </>
+      )}
     </>
   );
 }
