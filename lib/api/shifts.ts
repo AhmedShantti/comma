@@ -12,14 +12,27 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
     throw new Error('No authentication token found. Please log in first.');
   }
 
+  // Debug logging
+  console.log('🔐 API Request Debug:');
+  console.log('URL:', url);
+  console.log('Token exists:', !!token);
+  console.log('Token length:', token.length);
+  console.log('Token preview:', token.substring(0, 20) + '...');
+
+  const headers = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+    ...options?.headers,
+  };
+
+  console.log('Headers:', { Authorization: headers.Authorization.substring(0, 30) + '...' });
+
   const res = await fetch(url, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...options?.headers,
-    },
+    headers,
   });
+
+  console.log('Response status:', res.status);
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
