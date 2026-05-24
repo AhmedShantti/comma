@@ -322,7 +322,7 @@ export function TablesManager() {
                 borderRadius: 8,
                 backgroundColor: 'var(--bg-elevated)',
                 display: 'grid',
-                gridTemplateColumns: '1fr 1fr 1fr 1fr auto',
+                gridTemplateColumns: '1fr 1fr 1fr 1fr 1.5fr auto',
                 gap: 16,
                 alignItems: 'center',
               }}
@@ -342,6 +342,43 @@ export function TablesManager() {
               <div>
                 <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Location</p>
                 <p style={{ fontSize: '1rem' }}>{table.location || '—'}</p>
+              </div>
+              <div>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Table UUID (QR Link)</p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <code style={{
+                    fontSize: '0.75rem',
+                    fontFamily: 'monospace',
+                    padding: '4px 8px',
+                    background: 'var(--bg)',
+                    borderRadius: 4,
+                    wordBreak: 'break-all',
+                    maxWidth: '200px',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}>
+                    {table.id}
+                  </code>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(`/menu/${table.id}`);
+                      alert('QR link copied to clipboard!');
+                    }}
+                    title="Copy QR link"
+                    style={{
+                      padding: '4px 8px',
+                      borderRadius: 4,
+                      border: '1px solid var(--border)',
+                      background: 'transparent',
+                      cursor: 'pointer',
+                      fontSize: '0.75rem',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    📋 Copy
+                  </button>
+                </div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button
