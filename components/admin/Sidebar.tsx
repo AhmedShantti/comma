@@ -60,6 +60,31 @@ const NAV: NavItem[] = [
     ),
   },
   {
+    href: '/dashboard/shifts',
+labelKey: 'shifts',
+icon: (
+  <svg
+    width="16"
+    height="16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    viewBox="0 0 24 24"
+  >
+    {/* Calendar */}
+    <rect x="3" y="4" width="18" height="17" rx="2" />
+    <line x1="3" y1="9" x2="21" y2="9" />
+
+    {/* Clock */}
+    <circle cx="12" cy="15" r="4" />
+    <line x1="12" y1="15" x2="12" y2="13" />
+    <line x1="12" y1="15" x2="14" y2="16" />
+  </svg>
+)
+  },
+  {
     href: '/dashboard/analytics',
     labelKey: 'analytics',
     icon: (

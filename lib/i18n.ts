@@ -11,7 +11,7 @@ export const UI = {
   tables: { en: 'Tables', ar: 'الطاولات' },
   analytics: { en: 'Analytics', ar: 'التحليلات' },
   settings: { en: 'Settings', ar: 'الإعدادات' },
-
+  shifts: { en: 'Shifts', ar: 'الوردية' },
   // Hero
   hero_eyebrow: { en: 'Premium Café & Lounge — Cairo', ar: 'مقهى وصالة فاخرة — القاهرة' },
   hero_title: { en: 'Our Menu', ar: 'قائمتنا' },
