@@ -5,6 +5,8 @@ async function request(
   options: RequestInit = {}
 ) {
   const url = `${API_URL}${endpoint}`;
+  console.log('[publicApi] Fetching:', url);
+
   const response = await fetch(url, {
     ...options,
     headers: {
@@ -13,11 +15,19 @@ async function request(
     },
   });
 
+  console.log(`[publicApi] Response status for ${endpoint}:`, response.status);
+
   if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
+    let error: any = {};
+    try {
+      error = await response.json();
+    } catch (e) {
+      // Unable to parse error response
+    }
     const msg = Array.isArray(error.message)
       ? error.message[0]
       : error.message || `HTTP ${response.status}`;
+    console.error(`[publicApi] Error on ${endpoint}:`, msg);
     throw new Error(msg);
   }
 

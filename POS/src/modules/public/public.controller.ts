@@ -7,6 +7,11 @@ import { CreateCustomerOrderDto } from './dto/create-customer-order.dto';
 export class PublicController {
   constructor(private publicService: PublicService) {}
 
+  @Get('health')
+  health() {
+    return { status: 'ok', timestamp: new Date().toISOString() };
+  }
+
   @Get('tables/:id')
   async getTable(@Param('id') tableId: string) {
     const table = await this.publicService.getTable(tableId);
