@@ -43,13 +43,8 @@ export class OrdersService {
     }
 
     // Get today's order count for numbering
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayOrders = await this.ordersRepository.count({
-      where: { created_at: MoreThanOrEqual(today) },
-    });
-
-    const orderNumber = `#${String(todayOrders + 1).padStart(3, '0')}`;
+   
+    const orderNumber = await this.generateOrderNumber();
 
     const order = new Order();
     order.order_number = orderNumber;
@@ -298,6 +293,21 @@ export class OrdersService {
     return this.findById(orderId);
   }
 
+  private async generateOrderNumber(): Promise<string> {
+  return await this.dataSource.transaction('SERIALIZABLE', async (manager) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const count = await manager
+      .createQueryBuilder(Order, 'order')
+      .where('order.created_at >= :today', { today })
+      .setLock('pessimistic_write')
+      .getCount();
+
+    return `#${String(count + 1).padStart(3, '0')}`;
+    });
+  }
+
   async findById(id: string): Promise<Order> {
     const order = await this.ordersRepository.findOne({
       where: { id },
@@ -394,13 +404,7 @@ export class OrdersService {
     const shift = await this.shiftsService.getCurrentShift(userId);
     newOrder.shift_id = shift.id;
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const todayOrders = await this.ordersRepository.count({
-      where: { created_at: MoreThanOrEqual(today) },
-    });
-
-    newOrder.order_number = `#${String(todayOrders + 1).padStart(3, '0')}`;
+    newOrder.order_number = await this.generateOrderNumber();
 
     const saved = await this.ordersRepository.save(newOrder);
 
