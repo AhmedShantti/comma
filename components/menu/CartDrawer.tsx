@@ -327,7 +327,7 @@ export function CartDrawer({
                   </div>
                   <span style={{ color: '#c9a84c', fontSize: '13px', fontWeight: 600 }}>
                     ${(
-                      (item.unitPrice + item.addons.reduce((sum, a) => sum + a.price, 0)) *
+                      (Number(item.unitPrice) + item.addons.reduce((sum, a) => sum + Number(a.price), 0)) *
                       item.quantity
                     ).toFixed(2)}
                   </span>

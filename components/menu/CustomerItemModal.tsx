@@ -86,11 +86,11 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
         variantId: selectedVariant,
         variantName,
         quantity,
-        unitPrice: item.base_price + (item.variants?.find(v => v.id === selectedVariant)?.price_adjustment || 0),
+        unitPrice: Number(item.base_price) + Number(item.variants?.find(v => v.id === selectedVariant)?.price_adjustment || 0),
         addons: selectedAddonsList.map(a => ({
           id: a.id,
           name: lang === 'en' ? a.name_en : a.name_ar,
-          price: a.price,
+          price: Number(a.price),
         })),
         notes: notes || undefined,
       };
@@ -115,11 +115,11 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
   const itemName = lang === 'en' ? item?.name_en : item?.name_ar;
   const itemDesc = lang === 'en' ? item?.description_en : item?.description_ar;
 
-  const basePrice = item?.base_price ?? 0;
-  const variantPrice = item?.variants?.find(v => v.id === selectedVariant)?.price_adjustment ?? 0;
+  const basePrice = Number(item?.base_price ?? 0);
+  const variantPrice = Number(item?.variants?.find(v => v.id === selectedVariant)?.price_adjustment ?? 0);
   const addonsPrice = allAddons
     .filter(a => selectedAddons.includes(a.id))
-    .reduce((sum, a) => sum + a.price, 0);
+    .reduce((sum, a) => sum + Number(a.price), 0);
   const itemTotal = (basePrice + variantPrice + addonsPrice) * quantity;
 
   return (
