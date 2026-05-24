@@ -41,6 +41,15 @@ export class ShiftsController {
     return this.shiftsService.getActiveShifts();
   }
 
+  // ✅ New: Get completed orders for a shift (must be before :id route)
+  @Get(':id/orders')
+  getShiftOrders(
+    @Param('id') shiftId: string,
+    @Query() pagination: PaginationDto,
+  ) {
+    return this.shiftsService.getShiftOrders(shiftId, pagination);
+  }
+
   @Get()
   getShifts(
     @Query() pagination: PaginationDto,

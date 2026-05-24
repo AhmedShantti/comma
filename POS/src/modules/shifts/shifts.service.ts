@@ -5,12 +5,16 @@ import { Shift } from './entities/shift.entity';
 import { CreateShiftDto, CloseShiftDto } from './dto/create-shift.dto';
 import { ShiftStatus } from '../../common/enums/shift-status.enum';
 import { PaginationDto } from '../../common/dto/pagination.dto';
+import { Order } from '../orders/entities/order.entity';
+import { OrderStatus } from '../../common/enums/order.enum';
 
 @Injectable()
 export class ShiftsService {
   constructor(
     @InjectRepository(Shift)
     private shiftsRepository: Repository<Shift>,
+    @InjectRepository(Order)
+    private ordersRepository: Repository<Order>,
   ) {}
 
   async openShift(userId: string, createShiftDto: CreateShiftDto): Promise<Shift> {
@@ -40,10 +44,29 @@ export class ShiftsService {
       throw new NotFoundException('No open shift found for this user');
     }
 
+    // ✅ Calculate order totals for this shift
+    const completedOrders = await this.ordersRepository
+      .createQueryBuilder('order')
+      .where('order.shift_id = :shiftId', { shiftId: shift.id })
+      .andWhere('order.status = :status', { status: OrderStatus.COMPLETED })
+      .leftJoinAndSelect('order.items', 'items')
+      .getMany();
+
+    // Calculate totals
+    const totalOrders = completedOrders.length;
+    const totalAmount = completedOrders.reduce((sum, order) => sum + Number(order.total), 0);
+    const totalItems = completedOrders.reduce(
+      (sum, order) => sum + (order.items?.length || 0),
+      0,
+    );
+
     shift.closing_cash = closeShiftDto.closing_cash;
     shift.status = ShiftStatus.CLOSED;
     shift.closed_at = new Date();
     shift.notes = closeShiftDto.notes;
+    shift.total_orders = totalOrders;
+    shift.total_amount = totalAmount;
+    shift.total_items = totalItems;
 
     return this.shiftsRepository.save(shift);
   }
@@ -81,6 +104,43 @@ export class ShiftsService {
     }
 
     return shift;
+  }
+
+  // ✅ New: Get completed orders for a shift
+  async getShiftOrders(
+    shiftId: string,
+    pagination?: PaginationDto,
+  ) {
+    const query = this.ordersRepository
+      .createQueryBuilder('order')
+      .where('order.shift_id = :shiftId', { shiftId })
+      .andWhere('order.status = :status', { status: OrderStatus.COMPLETED })
+      .leftJoinAndSelect('order.items', 'items')
+      .leftJoinAndSelect('order.cashier', 'cashier')
+      .orderBy('order.created_at', 'DESC');
+
+    if (pagination) {
+      query.skip(pagination.skip).take(pagination.limit);
+    }
+
+    const [data, total] = await query.getManyAndCount();
+
+    if (pagination) {
+      return {
+        data,
+        meta: {
+          page: pagination.page,
+          limit: pagination.limit,
+          total,
+          totalPages: Math.ceil(total / pagination.limit),
+        },
+      };
+    }
+
+    return {
+      data,
+      meta: { total },
+    };
   }
 
   async getShifts(

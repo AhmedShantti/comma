@@ -37,6 +37,16 @@ export class Shift {
   @Column({ nullable: true })
   notes: string;
 
+  // ✅ New: Order Summary (calculated when shift closes)
+  @Column({ type: 'int', default: 0 })
+  total_orders: number = 0;
+
+  @Column('decimal', { precision: 12, scale: 2, default: 0 })
+  total_amount: number = 0;
+
+  @Column({ type: 'int', default: 0 })
+  total_items: number = 0;
+
   @CreateDateColumn()
   created_at: Date;
 

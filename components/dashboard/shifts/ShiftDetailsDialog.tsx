@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import { Modal } from './Modal';
 import { StatusBadge } from './StatusBadge';
+import { ShiftOrders } from './ShiftOrders';
 import { Shift } from './types';
 import { formatCurrency, formatDate, duration, getShiftInitial } from './utils';
 import { COLORS, SPACING, BORDER_RADIUS, FONT_SIZES } from './constants';
@@ -36,6 +37,27 @@ export function ShiftDetailsDialog({ shift, onClose }: ShiftDetailsDialogProps) 
             label: 'Difference',
             value: (diff >= 0 ? '+' : '') + formatCurrency(diff),
             color: diff >= 0 ? COLORS.greenSuccess : COLORS.redError,
+          }
+        : null,
+      shift.total_orders != null
+        ? {
+            label: 'Total Orders',
+            value: String(shift.total_orders),
+            color: COLORS.greenSuccess,
+          }
+        : null,
+      shift.total_amount != null
+        ? {
+            label: 'Orders Amount',
+            value: formatCurrency(shift.total_amount),
+            color: COLORS.greenSuccess,
+          }
+        : null,
+      shift.total_items != null
+        ? {
+            label: 'Total Items',
+            value: String(shift.total_items),
+            color: COLORS.greenSuccess,
           }
         : null,
     ].filter(Boolean);
@@ -163,6 +185,13 @@ export function ShiftDetailsDialog({ shift, onClose }: ShiftDetailsDialogProps) 
           </div>
         ))}
       </div>
+
+      {/* Orders section - only show for closed shifts with order data */}
+      {shift.status === 'closed' && shift.total_orders != null && shift.total_orders > 0 && (
+        <div style={{ marginBottom: SPACING.lg }}>
+          <ShiftOrders shiftId={shift.id} />
+        </div>
+      )}
 
       <button
         onClick={onClose}

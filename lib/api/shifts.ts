@@ -1,4 +1,4 @@
-import { Shift, ListResponse } from '@/components/dashboard/shifts/types';
+import { Shift, ListResponse, ShiftOrder, ShiftOrdersResponse } from '@/components/dashboard/shifts/types';
 
 const BASE_URL = (
   process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000'
@@ -53,4 +53,10 @@ export const shiftsApi = {
       method: 'POST',
       body: JSON.stringify({ closing_cash: closingCash, notes: notes || undefined }),
     }),
+
+  // ✅ New: Get completed orders for a shift
+  getShiftOrders: (shiftId: string, page: number = 1, limit: number = 10) => {
+    const params = new URLSearchParams({ page: String(page), limit: String(limit) });
+    return apiFetch<ShiftOrdersResponse>(`/api/v1/shifts/${shiftId}/orders?${params}`);
+  },
 };
