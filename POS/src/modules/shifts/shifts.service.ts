@@ -61,6 +61,15 @@ export class ShiftsService {
     return shift;
   }
 
+  // ✅ New: get all active shifts across all users (admin use)
+  async getActiveShifts(): Promise<Shift[]> {
+    return this.shiftsRepository.find({
+      where: { status: ShiftStatus.OPEN },
+      relations: ['user'],
+      order: { opened_at: 'DESC' },
+    });
+  }
+
   async getShiftById(id: string): Promise<Shift> {
     const shift = await this.shiftsRepository.findOne({
       where: { id },
@@ -74,8 +83,17 @@ export class ShiftsService {
     return shift;
   }
 
-  async getShifts(pagination: PaginationDto, filters?: { userId?: string; status?: ShiftStatus; startDate?: Date; endDate?: Date }) {
-    const query = this.shiftsRepository.createQueryBuilder('shift')
+  async getShifts(
+    pagination: PaginationDto,
+    filters?: {
+      userId?: string;
+      status?: ShiftStatus;
+      startDate?: Date;
+      endDate?: Date;
+    },
+  ) {
+    const query = this.shiftsRepository
+      .createQueryBuilder('shift')
       .leftJoinAndSelect('shift.user', 'user');
 
     if (filters?.userId) {
