@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '@/lib/api';
+import { publicApi } from '@/lib/public-api';
 import type { CategoryFilter, MenuItem, CategorySlug, Localized } from '@/lib/types';
 import { useLang } from '../LangProvider';
 import { pluralizeItems } from '@/lib/i18n';
@@ -70,9 +71,13 @@ export function MenuClient({ tableId }: MenuClientProps) {
     const fetchData = async () => {
       try {
         setLoading(true);
+
+        // Use public API when accessing via tableId, otherwise use authenticated API
+        const apiClient = tableId ? publicApi : api;
+
         const [catsRes, itemsRes] = await Promise.all([
-          api.categories.getAll('limit=100'),
-          api.menuItems.getAll('limit=100&is_active=true'),
+          apiClient.categories.getAll('limit=100'),
+          apiClient.menuItems.getAll('limit=100&is_active=true'),
         ]);
 
         // Unwrap paginated envelope: { data: [...], meta: {...} }

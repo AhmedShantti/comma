@@ -32,6 +32,12 @@ export const publicApi = {
       request(`/api/v1/public/tables/${id}`),
   },
 
+  // ================= PUBLIC CATEGORIES =================
+  categories: {
+    getAll: (qs?: string) =>
+      request(`/api/v1/categories${qs ? `?${qs}` : ''}`),
+  },
+
   // ================= PUBLIC MENU ITEMS =================
   menuItems: {
     getById: (id: string) =>
