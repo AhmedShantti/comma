@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ShiftsService } from './shifts.service';
-import { CreateShiftDto, CloseShiftDto } from './dto/create-shift.dto';
+import { CreateShiftDto, CloseShiftDto, ShiftFiltersDto } from './dto/create-shift.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -35,14 +35,22 @@ export class ShiftsController {
     return this.shiftsService.getCurrentShift(user.id);
   }
 
+  // ✅ Must be before :id route to avoid 'active' being treated as an id
+  @Get('active')
+  getActiveShifts() {
+    return this.shiftsService.getActiveShifts();
+  }
+
   @Get()
   getShifts(
     @Query() pagination: PaginationDto,
-    @Query() filters?: { userId?: string; status?: string },
+    @Query() filters: ShiftFiltersDto, // ✅ Fixed: was causing filters to never work
   ) {
     return this.shiftsService.getShifts(pagination, {
       userId: filters?.userId,
       status: filters?.status as any,
+      startDate: filters?.startDate ? new Date(filters.startDate) : undefined,
+      endDate: filters?.endDate ? new Date(filters.endDate) : undefined,
     });
   }
 
