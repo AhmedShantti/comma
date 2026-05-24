@@ -184,11 +184,19 @@ export class PublicService {
   }
 
   private async generateOrderNumber(): Promise<string> {
-    const today = new Date().toISOString().split('T')[0].replace(/-/g, '');
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayStr = today.toISOString().split('T')[0].replace(/-/g, '');
+
+    // Count orders created since midnight today
     const count = await this.ordersRepository.count({
-      where: { created_at: new Date() },
+      where: {
+        created_at: MoreThanOrEqual(today),
+      },
     });
-    return `ORD-${today}-${String(count + 1).padStart(4, '0')}`;
+
+    return `ORD-${todayStr}-${String(count + 1).padStart(4, '0')}`;
   }
 
   private async findOrderById(id: string): Promise<Order> {

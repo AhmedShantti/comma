@@ -276,7 +276,7 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
                           />
                           <span style={{ flex: 1, color: '#e8e0d0', fontSize: '13px' }}>{addonName}</span>
                           <span style={{ color: '#c9a84c', fontSize: '12px', fontWeight: 600 }}>
-                            +${Number(addon.price).toFixed(2)}
+                            +₪{Number(addon.price).toFixed(2)}
                           </span>
                         </label>
                       );
@@ -358,7 +358,7 @@ export function CustomerItemModal({ isOpen, onClose, itemId, onAddToCart }: Cust
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ color: '#555', fontSize: '12px', marginBottom: '4px' }}>TOTAL</div>
                   <div style={{ color: '#4ade80', fontSize: '18px', fontWeight: 600 }}>
-                    ${itemTotal.toFixed(2)}
+                    ₪{itemTotal.toFixed(2)}
                   </div>
                 </div>
               </div>

@@ -191,7 +191,7 @@ function ItemCard({ item, catName, lang, onEdit, onDelete, onToggle }: {
             border: '1px solid var(--border)',
           }}>{catName}</span>
           <span style={{ color: 'var(--gold)', fontWeight: 700, fontSize: '0.9rem' }}>
-            ILS {Number(item.base_price).toLocaleString()}
+            ₪{Number(item.base_price).toFixed(2)}
           </span>
         </div>
       </div>

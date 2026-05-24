@@ -316,7 +316,7 @@ export function AddOrderModal({ open, onClose }: Props) {
                     >
                       {menuItems.map((m) => (
                         <option key={m.id} value={m.id}>
-                          {m.name[lang]} — {t('egp')} {m.price}
+                          {m.name[lang]} — ₪{m.price.toFixed(2)}
                         </option>
                       ))}
                     </select>
@@ -328,7 +328,7 @@ export function AddOrderModal({ open, onClose }: Props) {
                       onChange={(e) => updateLine(i, { qty: Math.max(1, parseInt(e.target.value, 10) || 1) })}
                       disabled={submitting}
                     />
-                    <div className="modal-line-total">{t('egp')} {lineTotal.toLocaleString()}</div>
+                    <div className="modal-line-total">₪{lineTotal.toFixed(2)}</div>
                     <button
                       type="button"
                       className="modal-line-remove"
@@ -352,7 +352,7 @@ export function AddOrderModal({ open, onClose }: Props) {
 
         <div className="modal-foot">
           <div className="modal-total">
-            {t('total_label')}: <span>{t('egp')} {total.toLocaleString()}</span>
+            {t('total_label')}: <span>₪{total.toFixed(2)}</span>
           </div>
           <div className="modal-actions">
             <button type="button" className="btn-ghost" onClick={handleClose} disabled={submitting}>

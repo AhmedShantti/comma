@@ -403,7 +403,7 @@ export function CartDrawer({
             >
               <span style={{ color: '#555', fontSize: '13px' }}>Total</span>
               <span style={{ color: '#c9a84c', fontSize: '16px', fontWeight: 600 }}>
-                ${totalAmount.toFixed(2)}
+                ₪{totalAmount.toFixed(2)}
               </span>
             </div>
             <button
