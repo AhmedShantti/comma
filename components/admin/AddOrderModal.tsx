@@ -170,14 +170,18 @@ export function AddOrderModal({ open, onClose }: Props) {
           quantity: line.qty,
         })),
       };
+      console.log('[AddOrderModal] Creating order with data:', orderData);
       await createOrder(orderData);
+      console.log('[AddOrderModal] Order created successfully');
       handleClose();
     } catch (err) {
+      console.error('[AddOrderModal] Error creating order:', err);
       if ((err as any)?.response?.status === 401) {
         await logout();
         return;
       }
-      setError((err as any)?.message || 'Failed to create order');
+      const errorMessage = (err as any)?.message || (err as any)?.response?.data?.message || 'Failed to create order';
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
