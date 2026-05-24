@@ -5,8 +5,12 @@ const BASE_URL = (
 ).replace(/\/+$/, '');
 
 async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : '';
+  const token = typeof window !== 'undefined' ? localStorage.getItem('comma_access_token') : '';
   const url = `${BASE_URL}${path}`;
+
+  if (!token) {
+    throw new Error('No authentication token found. Please log in first.');
+  }
 
   const res = await fetch(url, {
     ...options,
