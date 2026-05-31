@@ -21,7 +21,17 @@ const CAT_KEY: Record<MenuItem['cat'], keyof typeof UI> = {
 };
 
 export function MenuCard({ item, index, onClick }: Props) {
-  const { lang, t } = useLang();
+  const { lang = 'en', t } = useLang();
+
+  // Defensive checks for item properties
+  if (!item || !item.name || !item.desc) {
+    return null;
+  }
+
+  const itemName = item.name?.[lang] || item.name?.['en'] || 'Unnamed';
+  const itemDesc = item.desc?.[lang] || item.desc?.['en'] || '';
+  const catKey = item.cat ? CAT_KEY[item.cat as keyof typeof CAT_KEY] : 'cat_snacks';
+
   return (
     <article
       className="menu-card"
@@ -51,7 +61,7 @@ export function MenuCard({ item, index, onClick }: Props) {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={item.img}
-              alt={item.name[lang]}
+              alt={itemName}
               loading="lazy"
               onError={(e) => {
                 const img = e.currentTarget;
@@ -74,13 +84,13 @@ export function MenuCard({ item, index, onClick }: Props) {
         {item.popular && <span className="popular-tag">{t('popular')}</span>}
       </div>
       <div className="card-body">
-        <span className="card-category">{t(CAT_KEY[item.cat])}</span>
-        <h3 className="card-name">{item.name[lang]}</h3>
-        <p className="card-desc">{item.desc[lang]}</p>
-        {item.tags.length > 0 && (
+        <span className="card-category">{t(catKey || 'cat_snacks')}</span>
+        <h3 className="card-name">{itemName}</h3>
+        <p className="card-desc">{itemDesc}</p>
+        {item.tags && item.tags.length > 0 && (
           <div className="card-tags">
             {item.tags.slice(0, 2).map((tag, i) => (
-              <span key={i} className="card-tag">{tag[lang]}</span>
+              <span key={i} className="card-tag">{tag?.[lang] || tag?.['en'] || ''}</span>
             ))}
           </div>
         )}
