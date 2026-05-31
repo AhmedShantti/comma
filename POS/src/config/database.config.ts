@@ -19,7 +19,7 @@ export const databaseConfig = registerAs(
     };
 
     // Build config based on DATABASE_URL or individual variables
-    if (databaseUrl) {
+    if (databaseUrl && databaseUrl.trim()) {
       // Use DATABASE_URL (for Supabase or cloud deployments)
       return {
         ...baseConfig,

@@ -64,7 +64,7 @@ type Ctx = {
 const OrdersCtx = createContext<Ctx | null>(null);
 
 export function OrdersProvider({ children }: { children: React.ReactNode }) {
-  const { logout } = useAuth();
+  const { logout, user, loading: authLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,6 +74,12 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   }, [logout]);
 
   const refreshOrders = useCallback(async () => {
+    // Only fetch orders if user is authenticated
+    if (!user) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const result = await api.orders.getAll();
@@ -90,13 +96,16 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, [checkAndLogout]);
+  }, [checkAndLogout, user]);
 
   useEffect(() => {
+    // Only start polling if auth is done loading
+    if (authLoading) return;
+
     refreshOrders();
     const interval = setInterval(refreshOrders, 10_000);
     return () => clearInterval(interval);
-  }, [refreshOrders]);
+  }, [refreshOrders, authLoading]);
 
   const createOrder = useCallback(
     async (data: any) => {
