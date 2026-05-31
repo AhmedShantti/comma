@@ -238,6 +238,12 @@ export const api = {
         method: "DELETE",
         body: JSON.stringify({ reason }),
       }),
+
+    processPayment: (id: string, data: any) =>
+      request(`/api/v1/orders/${id}/pay`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   },
 
   // ================= TABLES =================

@@ -24,11 +24,9 @@ export class AuthController {
 
   @Post('refresh')
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    // Verify refresh token first
-    const user = this.authService['jwtService'].verify(refreshTokenDto.refreshToken, {
-      secret: this.authService['configService'].get('jwt').refreshSecret,
-    });
-    const userData = await this.usersService.findById(user.id);
+    // Verify refresh token and extract user ID
+    const decoded = await this.authService.validateRefreshToken(refreshTokenDto.refreshToken);
+    const userData = await this.usersService.findById(decoded.id);
     return this.authService.refresh(userData);
   }
 

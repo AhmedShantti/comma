@@ -89,4 +89,15 @@ export class AuthService {
     const isBlacklisted = await this.cacheManager.get(`blacklist_${token}`);
     return !isBlacklisted;
   }
+
+  async validateRefreshToken(refreshToken: string): Promise<{ id: string; username: string; role: string }> {
+    try {
+      const decoded = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get('jwt').refreshSecret,
+      });
+      return decoded;
+    } catch (err) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+  }
 }

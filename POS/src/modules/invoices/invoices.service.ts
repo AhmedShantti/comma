@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, MoreThanOrEqual } from 'typeorm';
 import { Invoice, Payment, Refund } from './entities/invoice.entity';
 import { Order } from '../orders/entities/order.entity';
 import { ProcessPaymentDto, RefundDto } from './dto/invoice.dto';
@@ -28,18 +28,15 @@ export class InvoicesService {
       throw new NotFoundException('Order not found');
     }
 
-    const totalPayment = processPaymentDto.payments.reduce((sum, p) => sum + p.amount, 0);
+    const totalPayment = processPaymentDto.payments.reduce((sum, p) => sum + Number(p.amount), 0);
+    const orderTotal = Number(order.total);
 
-    if (totalPayment < order.total) {
+    if (Number(totalPayment.toFixed(2)) < Number(orderTotal.toFixed(2))) {
       throw new BadRequestException('Payment amount is less than order total');
     }
 
-    // Generate invoice number
-    const lastInvoice = await this.invoicesRepository.findOne({
-      order: { issued_at: 'DESC' },
-    });
-
-    const invoiceNumber = `INV-${new Date().getFullYear()}-${String((parseInt(lastInvoice?.invoice_number?.split('-')[2] || '0') + 1)).padStart(5, '0')}`;
+    // Generate invoice number using today's date and sequence
+    const invoiceNumber = await this.generateInvoiceNumber();
 
     const invoice = new Invoice();
     invoice.invoice_number = invoiceNumber;
@@ -125,6 +122,20 @@ export class InvoicesService {
     };
   }
 
+  private async generateInvoiceNumber(): Promise<string> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const count = await this.invoicesRepository.count({
+      where: {
+        issued_at: MoreThanOrEqual(today) as any,
+      },
+    });
+
+    const dateStr = today.toISOString().split('T')[0].replace(/-/g, '');
+    return `INV-${dateStr}-${String(count + 1).padStart(4, '0')}`;
+  }
+
   async getReceiptData(id: string): Promise<any> {
     const invoice = await this.findById(id);
 
@@ -154,22 +165,26 @@ export class InvoicesService {
   async processRefund(invoiceId: string, userId: string, refundDto: RefundDto) {
     const invoice = await this.findById(invoiceId);
 
-    if (refundDto.amount > invoice.total) {
+    const refundAmount = Number(refundDto.amount);
+    const invoiceTotal = Number(invoice.total);
+
+    if (refundAmount > invoiceTotal) {
       throw new BadRequestException('Refund amount exceeds invoice total');
     }
 
     const refund = new Refund();
     refund.invoice_id = invoiceId;
-    refund.amount = refundDto.amount;
+    refund.amount = refundAmount;
     refund.reason = refundDto.reason;
     refund.approved_by = userId;
 
     await this.refundsRepository.save(refund);
 
     // Update invoice status
-    const totalRefunded = (invoice.refunds?.reduce((sum, r) => sum + r.amount, 0) || 0) + refundDto.amount;
+    const previousRefunds = (invoice.refunds?.reduce((sum, r) => sum + Number(r.amount), 0) || 0);
+    const totalRefunded = previousRefunds + refundAmount;
 
-    if (totalRefunded >= invoice.total) {
+    if (Number(totalRefunded.toFixed(2)) >= Number(invoiceTotal.toFixed(2))) {
       invoice.status = InvoiceStatus.REFUNDED;
     } else {
       invoice.status = InvoiceStatus.PARTIAL_REFUND;

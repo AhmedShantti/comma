@@ -52,11 +52,15 @@ export class ShiftsService {
       .leftJoinAndSelect('order.items', 'items')
       .getMany();
 
-    // Calculate totals
+    // Calculate totals with proper decimal precision
     const totalOrders = completedOrders.length;
-    const totalAmount = completedOrders.reduce((sum, order) => sum + Number(order.total), 0);
+    const totalAmount = Number(
+      completedOrders
+        .reduce((sum, order) => sum + Number(order.total), 0)
+        .toFixed(2),
+    );
     const totalItems = completedOrders.reduce(
-      (sum, order) => sum + (order.items?.length || 0),
+      (sum, order) => sum + (order.items?.filter(i => !i.is_voided).length || 0),
       0,
     );
 
