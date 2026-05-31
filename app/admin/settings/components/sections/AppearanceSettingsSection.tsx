@@ -17,7 +17,7 @@ export function AppearanceSettingsSection({ settings, onSave, error }: Appearanc
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {

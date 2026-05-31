@@ -21,7 +21,7 @@ export function OrderWorkflowSection({ settings, onSave, error }: OrderWorkflowS
   const statuses = formData.statuses || [];
 
   const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const handleAddCustomStatus = async () => {
@@ -37,14 +37,14 @@ export function OrderWorkflowSection({ settings, onSave, error }: OrderWorkflowS
     };
 
     const updatedStatuses = [...statuses, customStatus];
-    setFormData(prev => ({ ...prev, statuses: updatedStatuses }));
+    setFormData((prev: any) => ({ ...prev, statuses: updatedStatuses }));
     setNewStatus({ name: '', displayColor: '#FFB800' });
     setShowAddStatus(false);
   };
 
   const handleDeleteCustomStatus = (statusId: string) => {
     const updatedStatuses = statuses.filter((s: any) => s.id !== statusId);
-    setFormData(prev => ({ ...prev, statuses: updatedStatuses }));
+    setFormData((prev: any) => ({ ...prev, statuses: updatedStatuses }));
   };
 
   const handleSubmit = async () => {

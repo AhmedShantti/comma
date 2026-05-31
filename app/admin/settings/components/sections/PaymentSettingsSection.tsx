@@ -25,7 +25,7 @@ export function PaymentSettingsSection({ settings, onSave, error }: PaymentSetti
   const tipAmounts = formData.tip_percentages || [];
 
   const handleChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
 
   const togglePaymentMethod = (method: string) => {
