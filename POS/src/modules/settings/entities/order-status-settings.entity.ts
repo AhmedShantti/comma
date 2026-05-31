@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Restaurant } from '../../restaurants/entities/restaurant.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export interface OrderStatus {
   id: string;
@@ -20,9 +19,6 @@ export class OrderStatusSettings {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Restaurant)
-  @JoinColumn({ name: 'restaurant_id' })
-  restaurant: Restaurant;
 
   @Column()
   restaurant_id: string;

@@ -1,16 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Restaurant } from '../../restaurants/entities/restaurant.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('business_settings')
 export class BusinessSettings {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Restaurant)
-  @JoinColumn({ name: 'restaurant_id' })
-  restaurant: Restaurant;
-
-  @Column()
+  @Column({ type: 'uuid' })
   restaurant_id: string;
 
   @Column({ nullable: true })

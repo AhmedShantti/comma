@@ -1,5 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Restaurant } from '../../restaurants/entities/restaurant.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 export interface CardProcessor {
   name: string;
@@ -12,9 +11,6 @@ export class PaymentSettings {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Restaurant)
-  @JoinColumn({ name: 'restaurant_id' })
-  restaurant: Restaurant;
 
   @Column()
   restaurant_id: string;

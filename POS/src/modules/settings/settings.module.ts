@@ -16,7 +16,7 @@ import { SecuritySettings } from './entities/security-settings.entity';
 import { MonitoringSettings } from './entities/monitoring-settings.entity';
 import { IntegrationSettings } from './entities/integration-settings.entity';
 import { SettingsService } from './settings.service';
-import { SettingsController } from './settings.controller';
+import { SettingsController } from './controllers/settings.controller';
 import { BusinessSettingsService } from './services/business-settings.service';
 import { RestaurantSettingsService } from './services/restaurant-settings.service';
 import { MenuSettingsService } from './services/menu-settings.service';

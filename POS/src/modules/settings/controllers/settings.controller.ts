@@ -1,5 +1,5 @@
 import { Controller, Get, Patch, Post, Delete, Body, Param, UseGuards, Request } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../common/guards/jwt-auth.guard';
 import { BusinessSettingsService } from '../services/business-settings.service';
 import { RestaurantSettingsService } from '../services/restaurant-settings.service';
 import { MenuSettingsService } from '../services/menu-settings.service';

@@ -1,14 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
-import { Restaurant } from '../../restaurants/entities/restaurant.entity';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('appearance_settings')
 export class AppearanceSettings {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Restaurant)
-  @JoinColumn({ name: 'restaurant_id' })
-  restaurant: Restaurant;
 
   @Column()
   restaurant_id: string;
