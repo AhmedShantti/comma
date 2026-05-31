@@ -14,8 +14,8 @@ import { MenuNavbar } from './MenuNavbar';
 import { useCart, CartItem } from '@/hooks/useCart';
 
 type FrontendCategory = {
-  id?: string;
-  slug: CategorySlug;
+  id: string;
+  slug: CategorySlug | string; // Allow string for unmapped categories
   name: Localized;
 };
 
@@ -95,10 +95,10 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
   };
 
   // Helper to generate slug from category name
-  const generateSlug = (name: string): CategorySlug => {
+  const generateSlug = (name: string): CategorySlug | string => {
     if (nameToSlug[name]) return nameToSlug[name];
-    // Create slug from name: lowercase, replace spaces with hyphens
-    return name.toLowerCase().replace(/\s+/g, '-') as CategorySlug;
+    // Generate slug from unmapped category name: lowercase, replace spaces with hyphens
+    return name.toLowerCase().replace(/\s+/g, '-');
   };
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
 
         // Map backend category shape → frontend shape
         // Create id->slug mapping from backend categories
-        const catIdToSlug: Record<string, CategorySlug> = {};
+        const catIdToSlug: Record<string, CategorySlug | string> = {};
         const mappedCats = rawCats
           .map((c: any) => {
             const slug = generateSlug(c.name_en || '');
@@ -136,7 +136,7 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
         // Map backend menu-item shape → frontend shape
         const mappedItems = rawItems.map((m: any) => {
           const catId = m.category_id;
-          const slug = catIdToSlug[catId] || generateSlug('Other');
+          const slug = (catIdToSlug[catId] || 'snacks') as any; // Allow any slug type for items
           return {
             id:      m.id,
             cat:     slug,
