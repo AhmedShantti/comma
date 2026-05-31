@@ -29,7 +29,7 @@ import { UpdateSecuritySettingsDto } from '../dto/update-security-settings.dto';
 import { UpdateMonitoringSettingsDto } from '../dto/update-monitoring-settings.dto';
 import { UpdateIntegrationSettingsDto } from '../dto/update-integration-settings.dto';
 
-@Controller('api/v1/settings')
+@Controller('settings')
 @UseGuards(JwtAuthGuard)
 export class SettingsController {
   constructor(
