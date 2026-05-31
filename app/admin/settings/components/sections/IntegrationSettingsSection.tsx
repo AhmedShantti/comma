@@ -190,6 +190,7 @@ export function IntegrationSettingsSection({ settings, onSave, error }: Integrat
         type="text"
         value={formData.api_key_configured ? '✓ Configured' : '✗ Not configured'}
         disabled
+        onChange={() => {}}
       />
 
       <FormField
@@ -197,6 +198,7 @@ export function IntegrationSettingsSection({ settings, onSave, error }: Integrat
         type="text"
         value={formData.api_secret_configured ? '✓ Configured' : '✗ Not configured'}
         disabled
+        onChange={() => {}}
       />
 
       <div style={{ padding: '12px', backgroundColor: '#E3F2FD', borderRadius: '6px', marginTop: '24px', fontSize: '12px', color: '#1565C0' }}>
