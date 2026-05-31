@@ -23,8 +23,6 @@ export default function MenuPage({ params }: MenuPageProps) {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    console.log('[MenuPage] Mounted with tableId:', params.tableId);
-
     if (!params.tableId) {
       setError('Invalid table ID');
       setLoading(false);
@@ -36,9 +34,7 @@ export default function MenuPage({ params }: MenuPageProps) {
         setLoading(true);
         setError('');
 
-        console.log('[MenuPage] Fetching table, attempt', retryCount + 1);
         const url = `/api/v1/public/tables/${params.tableId}`;
-        console.log('[MenuPage] URL:', url);
 
         // Try to fetch with direct fetch to bypass any middleware issues
         const response = await fetch(url, {
@@ -49,7 +45,6 @@ export default function MenuPage({ params }: MenuPageProps) {
         });
 
         if (!response.ok) {
-          console.error('[MenuPage] Response not ok:', response.status);
           if (response.status === 404) {
             setError('Table not found. Please check the QR code.');
             setLoading(false);
@@ -61,16 +56,11 @@ export default function MenuPage({ params }: MenuPageProps) {
         const json = await response.json();
         const data = json?.data !== undefined ? json.data : json;
 
-        console.log('[MenuPage] Table loaded successfully:', data);
         setTable(data);
         setError('');
       } catch (err) {
-        const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-        console.error('[MenuPage] Error fetching table:', errorMsg, err);
-
         // Don't show error immediately - allow menu to load without table validation
         // Customer can still order without table info
-        console.warn('[MenuPage] Failed to load table info, allowing menu to load without table');
         setTable(null);
         setError('');
       } finally {
