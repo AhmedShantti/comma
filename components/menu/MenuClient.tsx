@@ -148,15 +148,16 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
   }, []);
 
   const filteredItems = useMemo(() => {
-    const q = searchQ.toLowerCase().trim();
-    return items.filter((item) => {
+    const q = searchQ?.toLowerCase()?.trim() || '';
+    return (items || []).filter((item) => {
+      if (!item || !item.name) return false;
       const matchCat = activeCat === 'all' || item.cat === activeCat;
       if (!q) return matchCat;
       const haystack = [
-        item.name.en, item.name.ar,
-        item.desc.en, item.desc.ar,
-        item.cat,
-        ...item.tags.flatMap((tg) => [tg.en, tg.ar]),
+        item.name?.en || '', item.name?.ar || '',
+        item.desc?.en || '', item.desc?.ar || '',
+        item.cat || '',
+        ...(item.tags || []).flatMap((tg: any) => [tg?.en || '', tg?.ar || '']),
       ].join(' ').toLowerCase();
       return matchCat && haystack.includes(q);
     });
@@ -164,15 +165,15 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
 
   const hasFilter = !!searchQ || activeCat !== 'all';
 
-  let label = pluralizeItems(filteredItems.length, lang);
+  let label = pluralizeItems(filteredItems?.length || 0, lang || 'en');
   if (activeCat !== 'all') {
-    const cat = categories.find((c) => c.slug === activeCat);
-    if (cat) {
-      const catName = cat.name[lang];
-      label += lang === 'ar' ? ` في ${catName}` : ` in ${catName}`;
+    const cat = (categories || []).find((c) => c?.slug === activeCat);
+    if (cat?.name) {
+      const catName = cat.name?.[lang || 'en'] || '';
+      label += (lang === 'ar') ? ` في ${catName}` : ` in ${catName}`;
     }
   }
-  if (searchQ) label += lang === 'ar' ? ` لـ "${searchQ}"` : ` for "${searchQ}"`;
+  if (searchQ) label += (lang === 'ar') ? ` لـ "${searchQ}"` : ` for "${searchQ}"`;
 
   function clearFilters() {
     setActiveCat('all');
