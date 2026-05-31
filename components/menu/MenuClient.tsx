@@ -93,10 +93,19 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
         const rawCats  = Array.isArray(catsRes)  ? catsRes  : (catsRes?.data  ?? []);
         const rawItems = Array.isArray(itemsRes) ? itemsRes : (itemsRes?.data ?? []);
 
+        // Validate rawCats is an array
+        if (!Array.isArray(rawCats)) {
+          console.error('[MenuClient] Categories is not an array:', rawCats);
+          setCategories([]);
+          setItems([]);
+          return;
+        }
+
         // Map backend category shape → frontend shape
         // Create id->slug mapping from backend categories
         const catIdToSlug: Record<string, CategorySlug | string> = {};
         const mappedCats = rawCats
+          .filter((c: any) => c && c.id && c.name_en) // Filter out invalid categories
           .map((c: any) => {
             const slug = generateSlug(c.name_en || '');
             catIdToSlug[c.id] = slug;
@@ -105,28 +114,30 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
               slug,
               name: { en: c.name_en ?? '', ar: c.name_ar ?? '' },
             };
-          })
-          .filter((cat: any) => cat.name.en.trim()); // only include categories with names
+          });
 
         // Map backend menu-item shape → frontend shape
-        const mappedItems = rawItems.map((m: any) => {
-          const catId = m.category_id;
-          const slug = (catIdToSlug[catId] || 'snacks') as any; // Allow any slug type for items
-          return {
-            id:      m.id,
-            cat:     slug,
-            price:   Number(m.base_price ?? 0),
-            img:     m.image_url ?? '',
-            popular: false,
-            name:    { en: m.name_en ?? '', ar: m.name_ar ?? '' },
-            desc:    { en: m.description_en ?? '', ar: m.description_ar ?? '' },
-            tags:    [],
-          };
-        });
+        const mappedItems = (Array.isArray(rawItems) ? rawItems : [])
+          .filter((m: any) => m && m.id && m.name_en) // Filter out invalid items
+          .map((m: any) => {
+            const catId = m.category_id;
+            const slug = (catIdToSlug[catId] || 'snacks') as any; // Allow any slug type for items
+            return {
+              id:      m.id,
+              cat:     slug,
+              price:   Number(m.base_price ?? 0),
+              img:     m.image_url ?? '',
+              popular: false,
+              name:    { en: m.name_en ?? '', ar: m.name_ar ?? '' },
+              desc:    { en: m.description_en ?? '', ar: m.description_ar ?? '' },
+              tags:    [],
+            };
+          });
 
         setCategories(mappedCats);
         setItems(mappedItems);
       } catch (err) {
+        console.error('[MenuClient] Error fetching menu data:', err);
         setCategories([]);
         setItems([]);
       } finally {
