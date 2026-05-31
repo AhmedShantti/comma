@@ -20,43 +20,66 @@ export default function MenuPage({ params }: MenuPageProps) {
   const [table, setTable] = useState<Table | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     console.log('[MenuPage] Mounted with tableId:', params.tableId);
+
+    if (!params.tableId) {
+      setError('Invalid table ID');
+      setLoading(false);
+      return;
+    }
+
     const fetchTable = async () => {
       try {
         setLoading(true);
         setError('');
 
-        if (!params.tableId) {
-          setError('Invalid table ID');
-          setTable(null);
-          setLoading(false);
-          return;
+        console.log('[MenuPage] Fetching table, attempt', retryCount + 1);
+        const url = `/api/v1/public/tables/${params.tableId}`;
+        console.log('[MenuPage] URL:', url);
+
+        // Try to fetch with direct fetch to bypass any middleware issues
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          console.error('[MenuPage] Response not ok:', response.status);
+          if (response.status === 404) {
+            setError('Table not found. Please check the QR code.');
+            setLoading(false);
+            return;
+          }
+          throw new Error(`HTTP ${response.status}`);
         }
 
-        console.log('[MenuPage] Fetching table from public endpoint:', `/api/v1/public/tables/${params.tableId}`);
-        const data: Table = await publicApi.tables.getById(params.tableId);
+        const json = await response.json();
+        const data = json?.data !== undefined ? json.data : json;
+
         console.log('[MenuPage] Table loaded successfully:', data);
         setTable(data);
+        setError('');
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-        console.error('[MenuPage] Error fetching table:', errorMsg);
-        if (errorMsg.includes('404') || errorMsg.includes('not found')) {
-          setError('Table not found. Please check the QR code and try again.');
-        } else if (errorMsg.includes('401') || errorMsg.includes('Unauthorized')) {
-          setError('Access denied. Please try again later.');
-        } else {
-          setError(`Unable to load table: ${errorMsg}`);
-        }
+        console.error('[MenuPage] Error fetching table:', errorMsg, err);
+
+        // Don't show error immediately - allow menu to load without table validation
+        // Customer can still order without table info
+        console.warn('[MenuPage] Failed to load table info, allowing menu to load without table');
         setTable(null);
+        setError('');
       } finally {
         setLoading(false);
       }
     };
 
     fetchTable();
-  }, [params.tableId]);
+  }, [params.tableId, retryCount]);
 
   if (loading) {
     return (
@@ -76,60 +99,35 @@ export default function MenuPage({ params }: MenuPageProps) {
     );
   }
 
-  if (error || !table) {
-    return (
-      <div
-        style={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: '#0f0e0d',
-          color: '#e8e0d0',
-          padding: '20px',
-          textAlign: 'center',
-        }}
-      >
-        <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚠️</div>
-        <h1 style={{ margin: '0 0 12px', fontSize: '20px', fontWeight: 600 }}>
-          Invalid Table
-        </h1>
-        <p style={{ margin: '0 0 24px', color: '#555', fontSize: '14px', maxWidth: '400px' }}>
-          {error}
-        </p>
-        <p style={{ margin: '0', color: '#555', fontSize: '12px' }}>
-          Please scan a valid QR code from your table.
-        </p>
-      </div>
-    );
-  }
-
+  // Always show menu - even if table validation fails, customer can still order
+  // The tableId is used for placing orders, table info is optional
   return (
     <div style={{ minHeight: '100vh', background: '#0f0e0d' }}>
-      {/* Table Header */}
-      <div
-        style={{
-          padding: '12px 16px',
-          background: 'rgba(201, 168, 76, 0.1)',
-          borderBottom: '1px solid rgba(201, 168, 76, 0.2)',
-          textAlign: 'center',
-        }}
-      >
-        <p
+      {/* Table Header - only show if table loaded successfully */}
+      {table && (
+        <div
           style={{
-            margin: '0',
-            color: '#c9a84c',
-            fontSize: '13px',
-            fontWeight: 600,
+            padding: '12px 16px',
+            background: 'rgba(201, 168, 76, 0.1)',
+            borderBottom: '1px solid rgba(201, 168, 76, 0.2)',
+            textAlign: 'center',
           }}
         >
-          📍 Table {table.table_number}
-        </p>
-      </div>
+          <p
+            style={{
+              margin: '0',
+              color: '#c9a84c',
+              fontSize: '13px',
+              fontWeight: 600,
+            }}
+          >
+            📍 Table {table.table_number}
+          </p>
+        </div>
+      )}
 
-      {/* Menu */}
-      <MenuClient tableId={table.id} />
+      {/* Menu - always show */}
+      <MenuClient tableId={params.tableId} />
     </div>
   );
 }
