@@ -1,0 +1,12 @@
+VERCEL BUILD TRIGGER
+Timestamp: 2026-05-31 19:14:00 UTC
+Commit: cdeb803
+Reason: Force rebuild with all Platform Control Center Phase 2 files
+
+This file triggers a rebuild to ensure Vercel uses the latest commit which includes:
+- All 14 section components
+- All utility components (SettingsForm, FormField, SettingsSidebar, useSettings)
+- Complete Phase 1 backend (entities, services, DTOs, migrations)
+
+Previous deployments were building from commit 6185e43 which lacked the utility components.
+This file ensures the next deployment uses the latest commit with all necessary files.
