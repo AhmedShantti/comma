@@ -170,9 +170,7 @@ export function AddOrderModal({ open, onClose }: Props) {
           quantity: line.qty,
         })),
       };
-      console.log('[AddOrderModal] Creating order with data:', orderData);
       await createOrder(orderData);
-      console.log('[AddOrderModal] Order created successfully');
       handleClose();
     } catch (err) {
       console.error('[AddOrderModal] Error creating order:', err);

@@ -101,17 +101,9 @@ export function OrdersProvider({ children }: { children: React.ReactNode }) {
   const createOrder = useCallback(
     async (data: any) => {
       try {
-        console.log('[OrdersProvider] Creating order:', data);
         const result = await api.orders.create(data);
-        console.log('[OrdersProvider] Order created, result:', result);
         await refreshOrders();
       } catch (err: any) {
-        console.error('[OrdersProvider] Error creating order:', {
-          message: err?.message,
-          status: err?.response?.status,
-          data: err?.response?.data,
-          fullError: err,
-        });
         if (err?.message?.includes('401') || err?.status === 401) {
           await checkAndLogout();
           return;

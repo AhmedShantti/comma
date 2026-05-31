@@ -5,6 +5,8 @@ import { Order, OrderItem, OrderItemAddOn, OrderStatusLog } from './entities/ord
 import { CreateOrderDto, UpdateOrderDto, ChangeOrderStatusDto, AddOrderItemsDto, UpdateOrderItemDto, VoidOrderItemDto } from './dto/create-order.dto';
 import { PaginationDto } from '../../common/dto/pagination.dto';
 import { OrderStatus, OrderType } from '../../common/enums/order.enum';
+import { UserRole } from '../../common/enums/user-role.enum';
+import { User } from '../users/entities/user.entity';
 import { ShiftsService } from '../shifts/shifts.service';
 import { MenuItemsService } from '../menu-items/menu-items.service';
 import { AddonsService } from '../addons/addons.service';
@@ -28,8 +30,23 @@ export class OrdersService {
     private dataSource: DataSource,
   ) {}
 
-  async create(userId: string, createOrderDto: CreateOrderDto): Promise<Order> {
-    const shift = await this.shiftsService.getCurrentShift(userId);
+  async create(user: User, createOrderDto: CreateOrderDto): Promise<Order> {
+    // Get shift if user is a cashier; allow admins/managers to create orders without shift
+    let shiftId: string | undefined;
+
+    if (user.role === UserRole.CASHIER) {
+      const shift = await this.shiftsService.getCurrentShift(user.id);
+      shiftId = shift.id;
+    } else {
+      // Admin/Manager can create orders without an open shift
+      // Try to get current shift, but don't fail if none exists
+      try {
+        const shift = await this.shiftsService.getCurrentShift(user.id);
+        shiftId = shift.id;
+      } catch {
+        shiftId = undefined;
+      }
+    }
 
     // Resolve table_id to table_number if needed
     let tableNumber: number | undefined;
@@ -43,14 +60,14 @@ export class OrdersService {
     }
 
     // Get today's order count for numbering
-   
+
     const orderNumber = await this.generateOrderNumber();
 
     const order = new Order();
     order.order_number = orderNumber;
     order.type = createOrderDto.type;
-    order.cashier_id = userId;
-    order.shift_id = shift.id;
+    order.cashier_id = user.id;
+    order.shift_id = shiftId;
     order.customer_name = createOrderDto.customer_name;
     order.customer_phone = createOrderDto.customer_phone;
     order.delivery_address = createOrderDto.delivery_address;
@@ -65,7 +82,7 @@ export class OrdersService {
     const saved = await this.ordersRepository.save(order);
 
     if (createOrderDto.items && createOrderDto.items.length > 0) {
-      await this.addItems(saved.id, createOrderDto.items, userId);
+      await this.addItems(saved.id, createOrderDto.items, user.id);
     }
 
     return this.findById(saved.id);
