@@ -39,7 +39,6 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<FrontendCategory[]>([]);
   const [loading, setLoading] = useState(true);
-  const [table, setTable] = useState<{ id: string; table_number: number; capacity: number } | null>(null);
 
   // Cart state (only if tableId is provided)
   const cart = useCart();
@@ -51,30 +50,6 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
     const timer = setTimeout(() => setSearchQ(searchInput), 220);
     return () => clearTimeout(timer);
   }, [searchInput]);
-
-  // Fetch table info if tableId is provided
-  useEffect(() => {
-    if (!tableId) return;
-
-    const fetchTable = async () => {
-      try {
-        const response = await fetch(`/api/v1/public/tables/${tableId}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (response.ok) {
-          const json = await response.json();
-          const data = json?.data !== undefined ? json.data : json;
-          setTable(data);
-        }
-      } catch (err) {
-        // Silently fail - table info is optional
-      }
-    };
-
-    fetchTable();
-  }, [tableId]);
 
   // Map category names to frontend slugs - use category name as slug if no mapping
   const nameToSlug: Record<string, CategorySlug> = {
@@ -200,7 +175,7 @@ export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
       {tableId && (
         <MenuNavbar
           tableId={tableId}
-          tableNumber={table?.table_number}
+          tableNumber={tableNumber}
           cartItemCount={cart.totalItems}
           onCartClick={() => setCartOpen(true)}
         />
