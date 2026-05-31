@@ -16,6 +16,8 @@ export function MenuSettingsSection({ settings, onSave, error }: MenuSettingsSec
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -43,6 +45,7 @@ export function MenuSettingsSection({ settings, onSave, error }: MenuSettingsSec
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <FormField
         label="Hide Sold Out Items"

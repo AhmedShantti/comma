@@ -16,6 +16,8 @@ export function RestaurantConfigSection({ settings, onSave, error }: RestaurantC
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -47,6 +49,7 @@ export function RestaurantConfigSection({ settings, onSave, error }: RestaurantC
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <FormField
         label="Opening Time"

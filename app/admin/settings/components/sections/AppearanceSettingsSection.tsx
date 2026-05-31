@@ -16,6 +16,8 @@ export function AppearanceSettingsSection({ settings, onSave, error }: Appearanc
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -43,6 +45,7 @@ export function AppearanceSettingsSection({ settings, onSave, error }: Appearanc
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <h3 style={{ marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Colors</h3>
 

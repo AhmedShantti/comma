@@ -16,6 +16,8 @@ export function ReportSettingsSection({ settings, onSave, error }: ReportSetting
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -45,6 +47,7 @@ export function ReportSettingsSection({ settings, onSave, error }: ReportSetting
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <h3 style={{ marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Daily Reports</h3>
 

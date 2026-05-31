@@ -16,6 +16,8 @@ export function PaymentSettingsSection({ settings, onSave, error }: PaymentSetti
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
+
   const paymentMethods = ['cash', 'card', 'mobile_wallet', 'check', 'bank_transfer'];
   const cardProcessors = ['stripe', 'paypal', 'square', 'tap', 'fawry'];
   const tipPercentages = [10, 15, 20, 25];
@@ -72,6 +74,7 @@ export function PaymentSettingsSection({ settings, onSave, error }: PaymentSetti
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <div style={{ marginBottom: '32px' }}>
         <h3 style={{ marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Accepted Payment Methods</h3>

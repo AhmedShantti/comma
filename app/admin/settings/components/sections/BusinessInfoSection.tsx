@@ -16,6 +16,9 @@ export function BusinessInfoSection({ settings, onSave, error }: BusinessInfoSec
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // Detect if there are unsaved changes
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -43,6 +46,7 @@ export function BusinessInfoSection({ settings, onSave, error }: BusinessInfoSec
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <FormField
         label="Restaurant Name"

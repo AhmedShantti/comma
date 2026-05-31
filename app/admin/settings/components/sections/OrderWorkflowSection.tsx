@@ -15,6 +15,8 @@ export function OrderWorkflowSection({ settings, onSave, error }: OrderWorkflowS
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+
+  const hasChanges = JSON.stringify(formData) !== JSON.stringify(settings || {});
   const [showAddStatus, setShowAddStatus] = useState(false);
   const [newStatus, setNewStatus] = useState({ name: '', displayColor: '#FFB800' });
 
@@ -70,6 +72,7 @@ export function OrderWorkflowSection({ settings, onSave, error }: OrderWorkflowS
       loading={saving}
       error={saveError || error}
       success={saveSuccess}
+      hasChanges={hasChanges}
     >
       <div style={{ marginBottom: '32px' }}>
         <h3 style={{ marginBottom: '16px', fontSize: '16px', fontWeight: '600' }}>Order Statuses</h3>
