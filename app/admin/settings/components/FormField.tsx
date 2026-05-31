@@ -39,7 +39,7 @@ export function FormField({
       {type === 'textarea' ? (
         <textarea
           id={inputId}
-          value={value}
+          value={String(value || '')}
           onChange={e => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
@@ -57,7 +57,7 @@ export function FormField({
       ) : type === 'select' ? (
         <select
           id={inputId}
-          value={value}
+          value={String(value || '')}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
           style={{
@@ -94,7 +94,7 @@ export function FormField({
         <input
           id={inputId}
           type="time"
-          value={value}
+          value={String(value || '')}
           onChange={e => onChange(e.target.value)}
           disabled={disabled}
           style={{
@@ -110,7 +110,7 @@ export function FormField({
         <input
           id={inputId}
           type={type}
-          value={value}
+          value={String(value || '')}
           onChange={e => onChange(type === 'number' ? Number(e.target.value) : e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
