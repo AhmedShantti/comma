@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateRestaurantSettingsTable1779700000001 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -20,14 +20,6 @@ export class CreateRestaurantSettingsTable1779700000001 implements MigrationInte
           { name: 'accepts_reservations', type: 'boolean', default: false },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
-        ],
-        foreignKeys: [
-          new TableForeignKey({
-            columnNames: ['restaurant_id'],
-            referencedTableName: 'restaurants',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          }),
         ],
         indices: [
           { columnNames: ['restaurant_id'], isUnique: true },

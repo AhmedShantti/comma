@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateMenuSettingsTable1779700000002 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -19,14 +19,6 @@ export class CreateMenuSettingsTable1779700000002 implements MigrationInterface 
           { name: 'items_per_page', type: 'integer', default: 12 },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
-        ],
-        foreignKeys: [
-          new TableForeignKey({
-            columnNames: ['restaurant_id'],
-            referencedTableName: 'restaurants',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          }),
         ],
         indices: [
           { columnNames: ['restaurant_id'], isUnique: true },

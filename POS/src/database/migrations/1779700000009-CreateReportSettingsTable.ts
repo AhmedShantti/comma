@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateReportSettingsTable1779700000009 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -22,14 +22,6 @@ export class CreateReportSettingsTable1779700000009 implements MigrationInterfac
           { name: 'export_format_default', type: 'varchar', default: "'pdf'" },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
-        ],
-        foreignKeys: [
-          new TableForeignKey({
-            columnNames: ['restaurant_id'],
-            referencedTableName: 'restaurants',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          }),
         ],
         indices: [
           { columnNames: ['restaurant_id'], isUnique: true },

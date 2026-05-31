@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateBusinessSettingsTable1779700000000 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -21,14 +21,6 @@ export class CreateBusinessSettingsTable1779700000000 implements MigrationInterf
           { name: 'owner_email', type: 'varchar', isNullable: true },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
-        ],
-        foreignKeys: [
-          new TableForeignKey({
-            columnNames: ['restaurant_id'],
-            referencedTableName: 'restaurants',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          }),
         ],
         indices: [
           { columnNames: ['restaurant_id'], isUnique: true },

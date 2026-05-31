@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateUserManagementSettingsTable1779700000006 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -19,14 +19,6 @@ export class CreateUserManagementSettingsTable1779700000006 implements Migration
           { name: 'auto_disable_inactive_users_days', type: 'integer', default: 90 },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
-        ],
-        foreignKeys: [
-          new TableForeignKey({
-            columnNames: ['restaurant_id'],
-            referencedTableName: 'restaurants',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          }),
         ],
         indices: [
           { columnNames: ['restaurant_id'], isUnique: true },

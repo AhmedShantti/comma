@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
 export class CreateMonitoringSettingsTable1779700000012 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
@@ -20,14 +20,6 @@ export class CreateMonitoringSettingsTable1779700000012 implements MigrationInte
           { name: 'performance_log_retention_days', type: 'integer', default: 30 },
           { name: 'created_at', type: 'timestamp', default: 'now()' },
           { name: 'updated_at', type: 'timestamp', default: 'now()' },
-        ],
-        foreignKeys: [
-          new TableForeignKey({
-            columnNames: ['restaurant_id'],
-            referencedTableName: 'restaurants',
-            referencedColumnNames: ['id'],
-            onDelete: 'CASCADE',
-          }),
         ],
         indices: [
           { columnNames: ['restaurant_id'], isUnique: true },
