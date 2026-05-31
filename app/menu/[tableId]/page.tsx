@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { publicApi } from '@/lib/public-api';
 import { MenuClient } from '@/components/menu/MenuClient';
+import { MenuNavbar } from '@/components/menu/MenuNavbar';
 
 interface Table {
   id: string;
@@ -93,31 +94,8 @@ export default function MenuPage({ params }: MenuPageProps) {
   // The tableId is used for placing orders, table info is optional
   return (
     <div style={{ minHeight: '100vh', background: '#0f0e0d' }}>
-      {/* Table Header - only show if table loaded successfully */}
-      {table && (
-        <div
-          style={{
-            padding: '12px 16px',
-            background: 'rgba(201, 168, 76, 0.1)',
-            borderBottom: '1px solid rgba(201, 168, 76, 0.2)',
-            textAlign: 'center',
-          }}
-        >
-          <p
-            style={{
-              margin: '0',
-              color: '#c9a84c',
-              fontSize: '13px',
-              fontWeight: 600,
-            }}
-          >
-            📍 Table {table.table_number}
-          </p>
-        </div>
-      )}
-
-      {/* Menu - always show */}
-      <MenuClient tableId={params.tableId} />
+      {/* Menu - always show, navbar is inside MenuClient */}
+      <MenuClient tableId={params.tableId} tableNumber={table?.table_number} />
     </div>
   );
 }

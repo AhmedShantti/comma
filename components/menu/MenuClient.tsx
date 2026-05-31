@@ -10,6 +10,7 @@ import { MenuCard } from './MenuCard';
 import { CartBar } from './CartBar';
 import { CartDrawer } from './CartDrawer';
 import { CustomerItemModal } from './CustomerItemModal';
+import { MenuNavbar } from './MenuNavbar';
 import { useCart, CartItem } from '@/hooks/useCart';
 
 type FrontendCategory = {
@@ -20,9 +21,10 @@ type FrontendCategory = {
 
 interface MenuClientProps {
   tableId?: string;
+  tableNumber?: number;
 }
 
-export function MenuClient({ tableId }: MenuClientProps) {
+export function MenuClient({ tableId, tableNumber }: MenuClientProps) {
   const { lang, t } = useLang();
 
   // Debug logging
@@ -37,6 +39,7 @@ export function MenuClient({ tableId }: MenuClientProps) {
   const [items, setItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<FrontendCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [table, setTable] = useState<{ id: string; table_number: number; capacity: number } | null>(null);
 
   // Cart state (only if tableId is provided)
   const cart = useCart();
@@ -49,7 +52,31 @@ export function MenuClient({ tableId }: MenuClientProps) {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
-  // Map category names to frontend slugs
+  // Fetch table info if tableId is provided
+  useEffect(() => {
+    if (!tableId) return;
+
+    const fetchTable = async () => {
+      try {
+        const response = await fetch(`/api/v1/public/tables/${tableId}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (response.ok) {
+          const json = await response.json();
+          const data = json?.data !== undefined ? json.data : json;
+          setTable(data);
+        }
+      } catch (err) {
+        // Silently fail - table info is optional
+      }
+    };
+
+    fetchTable();
+  }, [tableId]);
+
+  // Map category names to frontend slugs - use category name as slug if no mapping
   const nameToSlug: Record<string, CategorySlug> = {
     'Appetizers': 'appetizers',
     'Main Courses': 'main-courses',
@@ -65,6 +92,13 @@ export function MenuClient({ tableId }: MenuClientProps) {
     'Smoothies': 'smoothies',
     'Shisha': 'shisha',
     'Snacks': 'snacks',
+  };
+
+  // Helper to generate slug from category name
+  const generateSlug = (name: string): CategorySlug => {
+    if (nameToSlug[name]) return nameToSlug[name];
+    // Create slug from name: lowercase, replace spaces with hyphens
+    return name.toLowerCase().replace(/\s+/g, '-') as CategorySlug;
   };
 
   useEffect(() => {
@@ -89,7 +123,7 @@ export function MenuClient({ tableId }: MenuClientProps) {
         const catIdToSlug: Record<string, CategorySlug> = {};
         const mappedCats = rawCats
           .map((c: any) => {
-            const slug = nameToSlug[c.name_en] || 'snacks'; // default to snacks if no match
+            const slug = generateSlug(c.name_en || '');
             catIdToSlug[c.id] = slug;
             return {
               id: c.id,
@@ -97,19 +131,23 @@ export function MenuClient({ tableId }: MenuClientProps) {
               name: { en: c.name_en ?? '', ar: c.name_ar ?? '' },
             };
           })
-          .filter((cat: any) => nameToSlug[cat.name.en]); // only include mapped categories
+          .filter((cat: any) => cat.name.en.trim()); // only include categories with names
 
         // Map backend menu-item shape → frontend shape
-        const mappedItems = rawItems.map((m: any) => ({
-          id:      m.id,
-          cat:     catIdToSlug[m.category_id] || 'snacks', // use mapped slug, default to snacks
-          price:   Number(m.base_price ?? 0),
-          img:     m.image_url ?? '',
-          popular: false,
-          name:    { en: m.name_en ?? '', ar: m.name_ar ?? '' },
-          desc:    { en: m.description_en ?? '', ar: m.description_ar ?? '' },
-          tags:    [],
-        }));
+        const mappedItems = rawItems.map((m: any) => {
+          const catId = m.category_id;
+          const slug = catIdToSlug[catId] || generateSlug('Other');
+          return {
+            id:      m.id,
+            cat:     slug,
+            price:   Number(m.base_price ?? 0),
+            img:     m.image_url ?? '',
+            popular: false,
+            name:    { en: m.name_en ?? '', ar: m.name_ar ?? '' },
+            desc:    { en: m.description_en ?? '', ar: m.description_ar ?? '' },
+            tags:    [],
+          };
+        });
 
         setCategories(mappedCats);
         setItems(mappedItems);
@@ -158,6 +196,16 @@ export function MenuClient({ tableId }: MenuClientProps) {
 
   return (
     <>
+      {/* Navbar with cart icon - only show if tableId is provided */}
+      {tableId && (
+        <MenuNavbar
+          tableId={tableId}
+          tableNumber={table?.table_number}
+          cartItemCount={cart.totalItems}
+          onCartClick={() => setCartOpen(true)}
+        />
+      )}
+
       <div className="filters-bar">
         <div className="container">
           <div className="filters-inner">
