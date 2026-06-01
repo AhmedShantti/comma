@@ -8,6 +8,7 @@ import { MenuItemsModule } from '../menu-items/menu-items.module';
 import { AddonsModule } from '../addons/addons.module';
 import { InvoicesModule } from '../invoices/invoices.module';
 import { TablesModule } from '../tables/tables.module';
+import { ReceiptsModule } from '../receipts/receipts.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { TablesModule } from '../tables/tables.module';
     AddonsModule,
     InvoicesModule,
     TablesModule,
+    ReceiptsModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

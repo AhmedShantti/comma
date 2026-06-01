@@ -11,6 +11,7 @@ import { UserRole } from '../../common/enums/user-role.enum';
 import { User } from '../users/entities/user.entity';
 import { InvoicesService } from '../invoices/invoices.service';
 import { ProcessPaymentDto } from '../invoices/dto/invoice.dto';
+import { ReceiptService } from '../receipts/services/receipt.service';
 
 @ApiTags('orders')
 @ApiBearerAuth()
@@ -20,6 +21,7 @@ export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly invoicesService: InvoicesService,
+    private readonly receiptService: ReceiptService,
   ) {}
 
   @Post()
@@ -59,8 +61,27 @@ export class OrdersController {
     @Body() checkoutDto: any,
     @CurrentUser() user: User,
   ) {
-    const order = await this.ordersService.checkoutTable(id, user.id, checkoutDto);
-    return this.invoicesService.processPayment(id, user.id, { payments: checkoutDto.payments });
+    // 1. Apply any discounts
+    await this.ordersService.checkoutTable(id, user.id, checkoutDto);
+
+    // 2. Process payment (creates invoice, sets PAID, frees table)
+    const paymentResult = await this.invoicesService.processPayment(id, user.id, { payments: checkoutDto.payments });
+
+    // 3. Generate receipt from the paid order
+    const paidOrder = await this.ordersService.findById(id);
+    const primaryMethod = checkoutDto.payments?.[0]?.method || 'cash';
+    const receipt = await this.receiptService.generateReceipt(
+      paidOrder,
+      user.full_name || user.username || 'Cashier',
+      checkoutDto.waiter_name || null,
+      primaryMethod,
+    );
+
+    return {
+      invoice: paymentResult.invoice,
+      change: paymentResult.change,
+      receipt,
+    };
   }
 
   @Get(':id')
@@ -145,11 +166,28 @@ export class OrdersController {
   }
 
   @Post(':id/pay')
-  processPayment(
+  async processPayment(
     @Param('id') id: string,
     @Body() processPaymentDto: ProcessPaymentDto,
     @CurrentUser() user: User,
   ) {
-    return this.invoicesService.processPayment(id, user.id, processPaymentDto);
+    // 1. Process payment (creates invoice, sets PAID, frees table)
+    const paymentResult = await this.invoicesService.processPayment(id, user.id, processPaymentDto);
+
+    // 2. Generate receipt
+    const paidOrder = await this.ordersService.findById(id);
+    const primaryMethod = processPaymentDto.payments?.[0]?.method || 'cash';
+    const receipt = await this.receiptService.generateReceipt(
+      paidOrder,
+      user.full_name || user.username || 'Cashier',
+      null,
+      primaryMethod,
+    );
+
+    return {
+      invoice: paymentResult.invoice,
+      change: paymentResult.change,
+      receipt,
+    };
   }
 }
