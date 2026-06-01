@@ -11,9 +11,9 @@ export type User = {
 };
 
 export const ROLE_PATHS: Record<Role, string[]> = {
-  admin:   ['/dashboard', '/dashboard/orders', '/dashboard/tables', '/dashboard/analytics', '/dashboard/reports', '/dashboard/menu', '/dashboard/settings'],
-  manager: ['/dashboard', '/dashboard/orders', '/dashboard/tables', '/dashboard/analytics', '/dashboard/reports', '/dashboard/menu', '/dashboard/settings'],
-  cashier: ['/dashboard/orders', '/dashboard/tables'],
+  admin:   ['/dashboard', '/dashboard/orders', '/dashboard/tables', '/dashboard/receipts', '/dashboard/analytics', '/dashboard/reports', '/dashboard/menu', '/dashboard/settings'],
+  manager: ['/dashboard', '/dashboard/orders', '/dashboard/tables', '/dashboard/receipts', '/dashboard/analytics', '/dashboard/reports', '/dashboard/menu', '/dashboard/settings'],
+  cashier: ['/dashboard/orders', '/dashboard/tables', '/dashboard/receipts'],
 };
 
 export function getLandingPath(role: Role): string {

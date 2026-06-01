@@ -53,10 +53,12 @@ export type MostOrderedItem = {
 // Matches backend OrderStatus enum (lowercase)
 export type OrderStatus =
   | 'open'
+  | 'in_progress'
   | 'confirmed'
   | 'preparing'
   | 'ready'
   | 'completed'
+  | 'paid'
   | 'cancelled'
   | 'refunded';
 
@@ -203,6 +205,59 @@ export type Table = {
   status: TableStatus;
   location?: string;
   notes?: string;
+  active_order_id?: string;
   created_at: string;
   updated_at: string;
+};
+
+// -- Receipt Types --
+
+export type ReceiptItem = {
+  id: string;
+  receipt_id: string;
+  item_name_en: string;
+  item_name_ar: string;
+  quantity: number;
+  unit_price: number;
+  addons_total: number;
+  line_total: number;
+  notes?: string;
+  created_at: string;
+};
+
+export type Receipt = {
+  id: string;
+  receipt_number: string;
+  order_id: string;
+  table_number?: number;
+  table_id?: string;
+  order_number: string;
+  cashier_id?: string;
+  cashier_name?: string;
+  waiter_id?: string;
+  waiter_name?: string;
+  subtotal: number;
+  discount_type?: string;
+  discount_amount: number;
+  tax_rate: number;
+  tax_amount: number;
+  service_charge_rate: number;
+  service_charge_amount: number;
+  total: number;
+  payment_method?: string;
+  payment_status: string;
+  business_name?: string;
+  business_address?: string;
+  business_phone?: string;
+  tax_id?: string;
+  footer_message?: string;
+  items: ReceiptItem[];
+  created_at: string;
+};
+
+export type ReceiptStats = {
+  receiptsToday: number;
+  revenueToday: number;
+  revenueThisMonth: number;
+  averageReceiptValue: number;
 };

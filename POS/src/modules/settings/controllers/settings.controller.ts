@@ -14,6 +14,7 @@ import { AppearanceSettingsService } from '../services/appearance-settings.servi
 import { SecuritySettingsService } from '../services/security-settings.service';
 import { MonitoringSettingsService } from '../services/monitoring-settings.service';
 import { IntegrationSettingsService } from '../services/integration-settings.service';
+import { ReceiptSettingsService } from '../services/receipt-settings.service';
 import { UpdateBusinessSettingsDto } from '../dto/update-business-settings.dto';
 import { UpdateRestaurantSettingsDto } from '../dto/update-restaurant-settings.dto';
 import { UpdateMenuSettingsDto } from '../dto/update-menu-settings.dto';
@@ -47,6 +48,7 @@ export class SettingsController {
     private securitySettingsService: SecuritySettingsService,
     private monitoringSettingsService: MonitoringSettingsService,
     private integrationSettingsService: IntegrationSettingsService,
+    private receiptSettingsService: ReceiptSettingsService,
   ) {}
 
   // Business Info
@@ -217,5 +219,16 @@ export class SettingsController {
   @Patch('integrations')
   async updateIntegrationSettings(@Request() req, @Body() dto: UpdateIntegrationSettingsDto) {
     return this.integrationSettingsService.updateSettings(req.user.restaurantId, dto);
+  }
+
+  // Receipt Settings
+  @Get('receipt')
+  async getReceiptSettings(@Request() req) {
+    return this.receiptSettingsService.getSettings(req.user.restaurantId);
+  }
+
+  @Patch('receipt')
+  async updateReceiptSettings(@Request() req, @Body() dto: any) {
+    return this.receiptSettingsService.updateSettings(req.user.restaurantId, dto);
   }
 }

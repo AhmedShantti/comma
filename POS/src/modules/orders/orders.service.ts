@@ -11,6 +11,7 @@ import { ShiftsService } from '../shifts/shifts.service';
 import { MenuItemsService } from '../menu-items/menu-items.service';
 import { AddonsService } from '../addons/addons.service';
 import { TablesService } from '../tables/tables.service';
+import { TableStatus } from '../tables/entities/table.entity';
 
 @Injectable()
 export class OrdersService {
@@ -62,6 +63,18 @@ export class OrdersService {
     // Get today's order count for numbering
 
     const orderNumber = await this.generateOrderNumber();
+
+    // Prevent multiple active orders per table for dine-in
+    if (tableId && createOrderDto.type === OrderType.DINE_IN) {
+      const existingActive = await this.ordersRepository.findOne({
+        where: [{ table_id: tableId, status: OrderStatus.OPEN }],
+      });
+      if (existingActive) {
+        throw new ConflictException(
+          `Table already has an active order (${existingActive.order_number}). Use existing order or close it first.`,
+        );
+      }
+    }
 
     const order = new Order();
     order.order_number = orderNumber;
@@ -272,11 +285,13 @@ export class OrdersService {
 
   private validateStatusTransition(fromStatus: OrderStatus, toStatus: OrderStatus): void {
     const validTransitions: { [key in OrderStatus]: OrderStatus[] } = {
-      [OrderStatus.OPEN]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+      [OrderStatus.OPEN]: [OrderStatus.IN_PROGRESS, OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
+      [OrderStatus.IN_PROGRESS]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
       [OrderStatus.CONFIRMED]: [OrderStatus.PREPARING, OrderStatus.CANCELLED],
       [OrderStatus.PREPARING]: [OrderStatus.READY],
       [OrderStatus.READY]: [OrderStatus.COMPLETED],
-      [OrderStatus.COMPLETED]: [OrderStatus.REFUNDED],
+      [OrderStatus.COMPLETED]: [OrderStatus.PAID, OrderStatus.REFUNDED],
+      [OrderStatus.PAID]: [OrderStatus.REFUNDED],
       [OrderStatus.CANCELLED]: [],
       [OrderStatus.REFUNDED]: [],
     };
@@ -387,6 +402,7 @@ export class OrdersService {
     return this.ordersRepository.find({
       where: [
         { status: OrderStatus.OPEN },
+        { status: OrderStatus.IN_PROGRESS },
         { status: OrderStatus.CONFIRMED },
         { status: OrderStatus.PREPARING },
         { status: OrderStatus.READY },
@@ -466,6 +482,78 @@ export class OrdersService {
 
     await this.ordersRepository.save(order);
     await this.recalculateOrderPrice(orderId);
+
+    return this.findById(orderId);
+  }
+
+  // ─── Table-Based Order Methods ─────────────────────────
+
+  async getOrCreateTableOrder(tableId: string, user: User): Promise<Order> {
+    // Check for existing active order on this table
+    const existingOrder = await this.ordersRepository.findOne({
+      where: [{ table_id: tableId, status: OrderStatus.OPEN }],
+      relations: ['items', 'items.addons', 'statusLogs', 'cashier'],
+    });
+
+    if (existingOrder) {
+      return existingOrder;
+    }
+
+    // No active order — create a new one
+    const table = await this.tablesService.findById(tableId);
+
+    let shiftId: string | undefined;
+    try {
+      const shift = await this.shiftsService.getCurrentShift(user.id);
+      shiftId = shift.id;
+    } catch {
+      shiftId = undefined;
+    }
+
+    const orderNumber = await this.generateOrderNumber();
+
+    const order = new Order();
+    order.order_number = orderNumber;
+    order.type = OrderType.DINE_IN;
+    order.cashier_id = user.id;
+    order.shift_id = shiftId;
+    order.table_number = table.table_number;
+    order.table_id = tableId;
+    order.tax_rate = 15;
+    order.service_charge_rate = 0;
+
+    const saved = await this.ordersRepository.save(order);
+
+    // Mark table as occupied and track active order
+    await this.tablesService.updateStatus(tableId, TableStatus.OCCUPIED);
+    await this.tablesService.setActiveOrder(tableId, saved.id);
+
+    return this.findById(saved.id);
+  }
+
+  async getActiveTableOrder(tableId: string): Promise<Order | null> {
+    const order = await this.ordersRepository.findOne({
+      where: [{ table_id: tableId, status: OrderStatus.OPEN }],
+      relations: ['items', 'items.addons', 'statusLogs', 'cashier'],
+    });
+
+    return order || null;
+  }
+
+  async checkoutTable(orderId: string, userId: string, checkoutData: any): Promise<Order> {
+    const order = await this.findById(orderId);
+
+    if (!order.table_id) {
+      throw new BadRequestException('This order is not associated with a table');
+    }
+
+    // Apply discount if provided at checkout
+    if (checkoutData.discount_value !== undefined) {
+      order.discount_value = checkoutData.discount_value;
+      order.discount_type = checkoutData.discount_type || 'fixed';
+      await this.ordersRepository.save(order);
+      await this.recalculateOrderPrice(orderId);
+    }
 
     return this.findById(orderId);
   }

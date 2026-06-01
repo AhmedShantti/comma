@@ -15,6 +15,7 @@ import { AppearanceSettings } from './entities/appearance-settings.entity';
 import { SecuritySettings } from './entities/security-settings.entity';
 import { MonitoringSettings } from './entities/monitoring-settings.entity';
 import { IntegrationSettings } from './entities/integration-settings.entity';
+import { ReceiptSettings } from './entities/receipt-settings.entity';
 import { SettingsService } from './settings.service';
 import { SettingsController } from './controllers/settings.controller';
 import { BusinessSettingsService } from './services/business-settings.service';
@@ -31,6 +32,7 @@ import { AppearanceSettingsService } from './services/appearance-settings.servic
 import { SecuritySettingsService } from './services/security-settings.service';
 import { MonitoringSettingsService } from './services/monitoring-settings.service';
 import { IntegrationSettingsService } from './services/integration-settings.service';
+import { ReceiptSettingsService } from './services/receipt-settings.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([
@@ -49,6 +51,7 @@ import { IntegrationSettingsService } from './services/integration-settings.serv
     SecuritySettings,
     MonitoringSettings,
     IntegrationSettings,
+    ReceiptSettings,
   ])],
   controllers: [SettingsController],
   providers: [
@@ -67,6 +70,7 @@ import { IntegrationSettingsService } from './services/integration-settings.serv
     SecuritySettingsService,
     MonitoringSettingsService,
     IntegrationSettingsService,
+    ReceiptSettingsService,
   ],
   exports: [
     SettingsService,
@@ -84,6 +88,7 @@ import { IntegrationSettingsService } from './services/integration-settings.serv
     SecuritySettingsService,
     MonitoringSettingsService,
     IntegrationSettingsService,
+    ReceiptSettingsService,
   ],
 })
 export class SettingsModule {}

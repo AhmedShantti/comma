@@ -110,6 +110,26 @@ export class TablesService {
     return this.tablesRepository.save(table);
   }
 
+  async setActiveOrder(tableId: string, orderId: string): Promise<Table> {
+    const table = await this.findById(tableId);
+    table.active_order_id = orderId;
+    return this.tablesRepository.save(table);
+  }
+
+  async clearActiveOrder(tableId: string): Promise<Table> {
+    const table = await this.findById(tableId);
+    table.active_order_id = null;
+    table.status = TableStatus.AVAILABLE;
+    return this.tablesRepository.save(table);
+  }
+
+  async getTablesWithActiveOrders(): Promise<Table[]> {
+    return this.tablesRepository.find({
+      where: { status: TableStatus.OCCUPIED },
+      order: { table_number: 'ASC' },
+    });
+  }
+
   async getOrdersHistory(id: string, pagination: PaginationDto) {
     const table = await this.findById(id);
 

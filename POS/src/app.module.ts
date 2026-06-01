@@ -20,6 +20,7 @@ import { AddonsModule } from './modules/addons/addons.module';
 import { TablesModule } from './modules/tables/tables.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { InvoicesModule } from './modules/invoices/invoices.module';
+import { ReceiptsModule } from './modules/receipts/receipts.module';
 import { CashDrawerModule } from './modules/cash-drawer/cash-drawer.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
@@ -80,6 +81,7 @@ import { SeedingService } from './database/seeding.service';
     TablesModule,
     OrdersModule,
     InvoicesModule,
+    ReceiptsModule,
     CashDrawerModule,
     ReportsModule,
     DashboardModule,

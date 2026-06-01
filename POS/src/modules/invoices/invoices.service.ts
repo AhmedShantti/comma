@@ -65,10 +65,20 @@ export class InvoicesService {
       });
     }
 
-    // Update order status
-    order.status = OrderStatus.COMPLETED;
+    // Update order status to PAID and free the table
+    order.status = OrderStatus.PAID;
     order.completed_at = new Date();
     await this.ordersRepository.save(order);
+
+    // Free the table if this is a dine-in order
+    if (order.table_id) {
+      await this.ordersRepository.manager
+        .createQueryBuilder()
+        .update('tables')
+        .set({ status: 'available', active_order_id: null })
+        .where('id = :id', { id: order.table_id })
+        .execute();
+    }
 
     return {
       invoice: savedInvoice,

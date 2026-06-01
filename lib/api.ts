@@ -244,6 +244,37 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
+
+    getActiveTableOrder: (tableId: string) =>
+      request(`/api/v1/orders/table/${tableId}/active`),
+
+    openOrCreateTableOrder: (tableId: string) =>
+      request(`/api/v1/orders/table/${tableId}/open-or-create`, {
+        method: "POST",
+      }),
+
+    addItems: (id: string, items: any[]) =>
+      request(`/api/v1/orders/${id}/items`, {
+        method: "POST",
+        body: JSON.stringify({ items }),
+      }),
+
+    updateItem: (id: string, itemId: string, data: any) =>
+      request(`/api/v1/orders/${id}/items/${itemId}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+
+    removeItem: (id: string, itemId: string) =>
+      request(`/api/v1/orders/${id}/items/${itemId}`, {
+        method: "DELETE",
+      }),
+
+    checkout: (id: string, data: any) =>
+      request(`/api/v1/orders/${id}/checkout`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   },
 
   // ================= TABLES =================
@@ -292,6 +323,37 @@ export const api = {
 
     export: (id: string) =>
       request(`/api/v1/invoices/${id}/export`),
+  },
+
+  // ================= RECEIPTS =================
+  receipts: {
+    getAll: (filters?: any) => {
+      const params = new URLSearchParams();
+      if (filters) {
+        Object.entries(filters).forEach(([k, v]) => {
+          if (v !== undefined && v !== null && v !== '') params.set(k, String(v));
+        });
+      }
+      const qs = params.toString();
+      return request(`/api/v1/receipts${qs ? `?${qs}` : ''}`);
+    },
+
+    getById: (id: string) =>
+      request(`/api/v1/receipts/${id}`),
+
+    getStats: () =>
+      request("/api/v1/receipts/stats"),
+
+    getTopTables: () =>
+      request("/api/v1/receipts/top-tables"),
+
+    getTopItems: () =>
+      request("/api/v1/receipts/top-items"),
+
+    reprint: (id: string) =>
+      request(`/api/v1/receipts/${id}/reprint`, {
+        method: "POST",
+      }),
   },
 
   // ================= CASH DRAWER =================

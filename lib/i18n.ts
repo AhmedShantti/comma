@@ -12,6 +12,9 @@ export const UI = {
   analytics: { en: 'Analytics', ar: 'التحليلات' },
   settings: { en: 'Settings', ar: 'الإعدادات' },
   shifts: { en: 'Shifts', ar: 'الوردية' },
+  receipts: { en: 'Receipts', ar: 'الإيصالات' },
+  in_progress: { en: 'In Progress', ar: 'قيد التنفيذ' },
+  paid: { en: 'Paid', ar: 'مدفوع' },
   // Hero
   hero_eyebrow: { en: 'Premium Café & Lounge — Cairo', ar: 'مقهى وصالة فاخرة — القاهرة' },
   hero_title: { en: 'Our Menu', ar: 'قائمتنا' },

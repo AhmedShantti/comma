@@ -40,6 +40,29 @@ export class OrdersController {
     return this.ordersService.getActiveOrders();
   }
 
+  @Post('table/:tableId/open-or-create')
+  getOrCreateTableOrder(
+    @Param('tableId') tableId: string,
+    @CurrentUser() user: User,
+  ) {
+    return this.ordersService.getOrCreateTableOrder(tableId, user);
+  }
+
+  @Get('table/:tableId/active')
+  getActiveTableOrder(@Param('tableId') tableId: string) {
+    return this.ordersService.getActiveTableOrder(tableId);
+  }
+
+  @Post(':id/checkout')
+  async checkoutTable(
+    @Param('id') id: string,
+    @Body() checkoutDto: any,
+    @CurrentUser() user: User,
+  ) {
+    const order = await this.ordersService.checkoutTable(id, user.id, checkoutDto);
+    return this.invoicesService.processPayment(id, user.id, { payments: checkoutDto.payments });
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findById(id);

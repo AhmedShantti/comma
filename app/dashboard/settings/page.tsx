@@ -16,6 +16,7 @@ import { AppearanceSettingsSection } from '@/app/admin/settings/components/secti
 import { SecuritySettingsSection } from '@/app/admin/settings/components/sections/SecuritySettingsSection';
 import { MonitoringSettingsSection } from '@/app/admin/settings/components/sections/MonitoringSettingsSection';
 import { IntegrationSettingsSection } from '@/app/admin/settings/components/sections/IntegrationSettingsSection';
+import { ReceiptSettingsSection } from '@/app/admin/settings/components/sections/ReceiptSettingsSection';
 
 const SECTIONS = [
   { id: 'business-info', label: '🏢 Business Information', component: BusinessInfoSection },
@@ -24,6 +25,7 @@ const SECTIONS = [
   { id: 'tables-qr', label: '🪑 Tables & QR Codes', component: TableQRSection },
   { id: 'order-workflow', label: '📊 Order Workflow', component: OrderWorkflowSection },
   { id: 'payments', label: '💳 Payment Settings', component: PaymentSettingsSection },
+  { id: 'receipt', label: '🧾 Receipt Settings', component: ReceiptSettingsSection },
   { id: 'users', label: '👥 User Management', component: UserManagementSettingsSection },
   { id: 'shifts', label: '⏰ Shift Rules', component: ShiftSettingsSection },
   { id: 'notifications', label: '🔔 Notifications', component: NotificationSettingsSection },

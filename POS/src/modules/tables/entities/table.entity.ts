@@ -36,6 +36,9 @@ export class Table {
   @DeleteDateColumn()
   deleted_at: Date;
 
+  @Column({ nullable: true })
+  active_order_id: string;
+
   @OneToMany(() => Order, (order) => order.table, { cascade: false })
   orders: Order[];
 }
