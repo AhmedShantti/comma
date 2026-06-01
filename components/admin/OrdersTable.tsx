@@ -5,7 +5,7 @@ import { useLang } from '../LangProvider';
 import { useOrders } from './OrdersProvider';
 import type { OrderStatus } from '@/lib/types';
 
-const TERMINAL_STATUSES = ['completed', 'cancelled', 'refunded'];
+const TERMINAL_STATUSES = ['completed', 'paid', 'cancelled', 'refunded'];
 
 export function OrdersTable() {
   const { lang, t } = useLang();
@@ -94,7 +94,7 @@ export function OrdersTable() {
       </div>
 
       <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-color)', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-        {(['all', 'open', 'confirmed', 'preparing', 'ready', 'completed', 'cancelled'] as const).map((status) => (
+        {(['all', 'open', 'in_progress', 'confirmed', 'preparing', 'ready', 'completed', 'paid', 'cancelled'] as const).map((status) => (
           <button
             key={status}
             className={`btn-ghost ${statusFilter === status ? 'active' : ''}`}

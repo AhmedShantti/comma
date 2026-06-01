@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import { useLang } from '../LangProvider';
 import { useAuth } from '../AuthProvider';
 import type { Table } from '@/lib/types';
+import { TableOrderPanel } from './TableOrderPanel';
 
 type TableStatusValue = 'available' | 'occupied' | 'reserved';
 
@@ -211,6 +212,9 @@ export function TablesManager() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [orderTableId, setOrderTableId] = useState<string | null>(null);
+  const [orderLoading, setOrderLoading] = useState<string | null>(null);
+  const [activeOrder, setActiveOrder] = useState<any>(null);
 
   const loadTables = useCallback(async () => {
     try {
@@ -380,7 +384,26 @@ export function TablesManager() {
                   </button>
                 </div>
               </div>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button
+                  className="btn-primary"
+                  style={{ padding: '8px 14px', fontSize: '0.85rem' }}
+                  disabled={orderLoading === table.id}
+                  onClick={async () => {
+                    try {
+                      setOrderLoading(table.id);
+                      const order = await api.orders.openOrCreateTableOrder(table.id);
+                      setActiveOrder(order);
+                      setOrderTableId(table.id);
+                    } catch (e: any) {
+                      alert(e.message || 'Failed to open order');
+                    } finally {
+                      setOrderLoading(null);
+                    }
+                  }}
+                >
+                  {orderLoading === table.id ? 'Opening…' : table.status === 'occupied' ? '📋 View Order' : '➕ New Order'}
+                </button>
                 <button
                   className="btn-ghost"
                   style={{ padding: '8px 12px', fontSize: '0.85rem' }}
@@ -414,6 +437,16 @@ export function TablesManager() {
           message="Are you sure you want to delete this table?"
           onConfirm={handleDelete}
           onCancel={() => setDeleteId(null)}
+        />
+      )}
+
+      {/* Table Order Detail Panel */}
+      {orderTableId && activeOrder && (
+        <TableOrderPanel
+          order={activeOrder}
+          tableId={orderTableId}
+          onClose={() => { setOrderTableId(null); setActiveOrder(null); loadTables(); }}
+          onOrderUpdate={(updated: any) => setActiveOrder(updated)}
         />
       )}
     </div>
