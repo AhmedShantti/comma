@@ -111,9 +111,9 @@ export function ReceiptSettingsSection({ settings, onSave, error }: ReceiptSetti
 
       <FormField
         label="Currency Symbol"
-        value={formData.currency_symbol || 'EGP'}
+        value={formData.currency_symbol || 'ILS'}
         onChange={v => handleChange('currency_symbol', v)}
-        placeholder="EGP"
+        placeholder="ILS"
       />
 
       <FormField

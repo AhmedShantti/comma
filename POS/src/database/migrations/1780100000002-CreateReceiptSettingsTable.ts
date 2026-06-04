@@ -25,7 +25,7 @@ export class CreateReceiptSettingsTable1780100000002 implements MigrationInterfa
           { name: 'show_table_number', type: 'boolean', default: true },
           { name: 'auto_print_after_payment', type: 'boolean', default: false },
           { name: 'default_paper_size', type: 'varchar', default: "'80mm'" },
-          { name: 'currency_symbol', type: 'varchar', default: "'EGP'" },
+          { name: 'currency_symbol', type: 'varchar', default: "'ILS'" },
           { name: 'tax_percentage', type: 'decimal', precision: 5, scale: 2, default: 15 },
           { name: 'service_charge_percentage', type: 'decimal', precision: 5, scale: 2, default: 0 },
           { name: 'created_at', type: 'timestamp', default: 'now()' },

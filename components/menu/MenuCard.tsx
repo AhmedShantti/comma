@@ -79,7 +79,7 @@ export function MenuCard({ item, index, onClick }: Props) {
           </div>
         )}
         <div className="card-img-price">
-          <span>{t('egp')} {item.price}</span>
+          <span>{t('ils')} {item.price}</span>
         </div>
         {item.popular && <span className="popular-tag">{t('popular')}</span>}
       </div>

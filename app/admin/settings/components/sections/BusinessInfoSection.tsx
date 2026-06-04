@@ -108,9 +108,9 @@ export function BusinessInfoSection({ settings, onSave, error }: BusinessInfoSec
 
       <FormField
         label="Currency Code"
-        value={formData.currency_code || 'EGP'}
+        value={formData.currency_code || 'ILS'}
         onChange={v => handleChange('currency_code', v)}
-        placeholder="EGP, USD, EUR"
+        placeholder="ILS, USD, EUR"
       />
 
       <FormField

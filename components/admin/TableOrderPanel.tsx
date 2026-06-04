@@ -141,7 +141,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
             <div className="section-sub">
               Status: <span style={{ color: '#c9a84c', fontWeight: 600 }}>{order.status?.toUpperCase()}</span>
               {' · '}Items: {activeItems.length}
-              {' · '}Total: EGP {Number(order.total || 0).toFixed(2)}
+              {' · '}Total: ILS {Number(order.total || 0).toFixed(2)}
             </div>
           </div>
           <button className="modal-close" onClick={onClose}>
@@ -173,7 +173,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
                         {lang === 'ar' ? item.item_name_ar : item.item_name_en}
                       </span>
                       <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', marginLeft: 8 }}>
-                        EGP {Number(item.unit_price).toFixed(2)}
+                        ILS {Number(item.unit_price).toFixed(2)}
                       </span>
                       {item.notes && <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{item.notes}</div>}
                     </div>
@@ -184,7 +184,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
                       <button className="btn-ghost" style={{ padding: '4px 8px', fontSize: '0.85rem' }}
                         onClick={() => updateQty(item.id, item.quantity + 1)} disabled={loading}>+</button>
                       <span style={{ minWidth: 70, textAlign: 'right', fontWeight: 600, fontSize: '0.9rem' }}>
-                        EGP {(Number(item.unit_price) * item.quantity).toFixed(2)}
+                        ILS {(Number(item.unit_price) * item.quantity).toFixed(2)}
                       </span>
                       <button className="btn-ghost" style={{ padding: '4px 6px', color: '#d45454', fontSize: '0.8rem' }}
                         onClick={() => removeItem(item.id)} disabled={loading}>✕</button>
@@ -200,23 +200,23 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
             <div style={{ padding: '12px 14px', borderRadius: 6, backgroundColor: 'var(--bg)', marginBottom: 20, fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                 <span style={{ color: 'var(--text-muted)' }}>Subtotal</span>
-                <span>EGP {Number(order.subtotal || 0).toFixed(2)}</span>
+                <span>ILS {Number(order.subtotal || 0).toFixed(2)}</span>
               </div>
               {Number(order.discount_amount) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ color: 'var(--text-muted)' }}>Discount</span>
-                  <span style={{ color: '#ff6b6b' }}>-EGP {Number(order.discount_amount).toFixed(2)}</span>
+                  <span style={{ color: '#ff6b6b' }}>-ILS {Number(order.discount_amount).toFixed(2)}</span>
                 </div>
               )}
               {Number(order.tax_amount) > 0 && (
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span style={{ color: 'var(--text-muted)' }}>Tax ({order.tax_rate}%)</span>
-                  <span>EGP {Number(order.tax_amount).toFixed(2)}</span>
+                  <span>ILS {Number(order.tax_amount).toFixed(2)}</span>
                 </div>
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTop: '1px solid var(--border)', fontWeight: 700, fontSize: '1rem' }}>
                 <span>Total</span>
-                <span style={{ color: '#c9a84c' }}>EGP {Number(order.total || 0).toFixed(2)}</span>
+                <span style={{ color: '#c9a84c' }}>ILS {Number(order.total || 0).toFixed(2)}</span>
               </div>
             </div>
           )}
@@ -253,7 +253,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
                     onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                   >
                     <span style={{ fontSize: '0.85rem', fontWeight: 500 }}>{item.name[lang]}</span>
-                    <span style={{ fontSize: '0.8rem', color: '#c9a84c', fontWeight: 600 }}>EGP {item.price.toFixed(2)}</span>
+                    <span style={{ fontSize: '0.8rem', color: '#c9a84c', fontWeight: 600 }}>ILS {item.price.toFixed(2)}</span>
                   </button>
                 ))}
               </div>
@@ -268,7 +268,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
             {activeItems.length > 0 && order.status === 'open' && (
               <button className="btn-primary" style={{ padding: '10px 24px', fontSize: '0.95rem' }}
                 onClick={() => setShowCheckout(true)}>
-                💳 Checkout — EGP {Number(order.total || 0).toFixed(2)}
+                💳 Checkout — ILS {Number(order.total || 0).toFixed(2)}
               </button>
             )}
           </div>
@@ -291,7 +291,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
               <div style={{ marginBottom: 16 }}>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 8 }}>Order Total</p>
                 <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#c9a84c' }}>
-                  EGP {Number(order.total || 0).toFixed(2)}
+                  ILS {Number(order.total || 0).toFixed(2)}
                 </p>
               </div>
 
@@ -312,7 +312,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
                   style={{ padding: '10px 14px' }} />
                 {payAmount && parseFloat(payAmount) > Number(order.total) && (
                   <p style={{ fontSize: '0.8rem', color: '#4caf50', marginTop: 4 }}>
-                    Change: EGP {(parseFloat(payAmount) - Number(order.total)).toFixed(2)}
+                    Change: ILS {(parseFloat(payAmount) - Number(order.total)).toFixed(2)}
                   </p>
                 )}
               </div>
@@ -369,7 +369,7 @@ function exportReceiptPDF(receipt: any) {
         <tr><td>Subtotal</td><td class="right">${Number(receipt.subtotal).toFixed(2)}</td></tr>
         ${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}
         ${Number(receipt.tax_amount) > 0 ? `<tr><td>Tax (${receipt.tax_rate}%)</td><td class="right">${Number(receipt.tax_amount).toFixed(2)}</td></tr>` : ''}
-        <tr style="font-weight: bold;"><td>TOTAL</td><td class="right">EGP ${Number(receipt.total).toFixed(2)}</td></tr>
+        <tr style="font-weight: bold;"><td>TOTAL</td><td class="right">ILS ${Number(receipt.total).toFixed(2)}</td></tr>
       </table>
       <div class="separator"></div>
       <div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div>
@@ -423,7 +423,7 @@ function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
         ${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}
         ${Number(receipt.tax_amount) > 0 ? `<tr><td>Tax (${receipt.tax_rate}%)</td><td class="right">${Number(receipt.tax_amount).toFixed(2)}</td></tr>` : ''}
         ${Number(receipt.service_charge_amount) > 0 ? `<tr><td>Service (${receipt.service_charge_rate}%)</td><td class="right">${Number(receipt.service_charge_amount).toFixed(2)}</td></tr>` : ''}
-        <tr class="total-row"><td>TOTAL</td><td class="right">EGP ${Number(receipt.total).toFixed(2)}</td></tr>
+        <tr class="total-row"><td>TOTAL</td><td class="right">ILS ${Number(receipt.total).toFixed(2)}</td></tr>
       </table>
       <div class="separator"></div>
       <div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div>
@@ -467,17 +467,17 @@ function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
                 <span>{item.item_name_en}</span>
                 <span style={{ color: '#999', marginLeft: '8px' }}>x{item.quantity}</span>
               </div>
-              <span style={{ fontWeight: 500 }}>EGP {Number(item.line_total).toFixed(2)}</span>
+              <span style={{ fontWeight: 500 }}>ILS {Number(item.line_total).toFixed(2)}</span>
             </div>
           ))}
         </div>
 
         <div style={{ padding: '16px 24px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Subtotal</span><span>EGP {Number(receipt.subtotal).toFixed(2)}</span></div>
-          {Number(receipt.discount_amount) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Discount</span><span style={{ color: '#F44336' }}>-EGP {Number(receipt.discount_amount).toFixed(2)}</span></div>}
-          {Number(receipt.tax_amount) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Tax ({receipt.tax_rate}%)</span><span>EGP {Number(receipt.tax_amount).toFixed(2)}</span></div>}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Subtotal</span><span>ILS {Number(receipt.subtotal).toFixed(2)}</span></div>
+          {Number(receipt.discount_amount) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Discount</span><span style={{ color: '#F44336' }}>-ILS {Number(receipt.discount_amount).toFixed(2)}</span></div>}
+          {Number(receipt.tax_amount) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Tax ({receipt.tax_rate}%)</span><span>ILS {Number(receipt.tax_amount).toFixed(2)}</span></div>}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(201,168,76,0.15)', fontSize: '16px', fontWeight: 700 }}>
-            <span>Total</span><span style={{ color: '#c9a84c' }}>EGP {Number(receipt.total).toFixed(2)}</span>
+            <span>Total</span><span style={{ color: '#c9a84c' }}>ILS {Number(receipt.total).toFixed(2)}</span>
           </div>
         </div>
 

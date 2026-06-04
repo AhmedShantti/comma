@@ -59,7 +59,7 @@ export class ReceiptSettings {
   @Column({ default: '80mm' })
   default_paper_size: string;
 
-  @Column({ default: 'EGP' })
+  @Column({ default: 'ILS' })
   currency_symbol: string;
 
   @Column('decimal', { precision: 5, scale: 2, default: 15 })

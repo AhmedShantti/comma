@@ -17,7 +17,7 @@ export class BusinessSettingsService {
       settings = await this.repo.save({
         restaurant_id: restaurantId,
         restaurant_name: 'Restaurant Name',
-        currency_code: 'EGP',
+        currency_code: 'ILS',
       });
     }
     return settings;

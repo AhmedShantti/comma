@@ -27,7 +27,7 @@ export class ReceiptSettingsService {
         show_table_number: true,
         auto_print_after_payment: false,
         default_paper_size: '80mm',
-        currency_symbol: 'EGP',
+        currency_symbol: 'ILS',
         tax_percentage: 15,
         service_charge_percentage: 0,
       });

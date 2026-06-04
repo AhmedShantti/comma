@@ -16,7 +16,7 @@ export class CreateBusinessSettingsTable1779700000000 implements MigrationInterf
           { name: 'business_postal_code', type: 'varchar', isNullable: true },
           { name: 'business_license_number', type: 'varchar', isNullable: true },
           { name: 'tax_id', type: 'varchar', isNullable: true },
-          { name: 'currency_code', type: 'varchar', default: "'EGP'" },
+          { name: 'currency_code', type: 'varchar', default: "'ILS'" },
           { name: 'owner_name', type: 'varchar', isNullable: true },
           { name: 'owner_email', type: 'varchar', isNullable: true },
           { name: 'created_at', type: 'timestamp', default: 'now()' },

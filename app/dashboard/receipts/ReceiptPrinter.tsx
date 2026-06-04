@@ -77,7 +77,7 @@ export function printReceipt(receipt: Receipt, paperSize: '58mm' | '80mm' = '80m
     ${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}
     ${Number(receipt.tax_amount) > 0 ? `<tr><td>Tax (${receipt.tax_rate}%)</td><td class="right">${Number(receipt.tax_amount).toFixed(2)}</td></tr>` : ''}
     ${Number(receipt.service_charge_amount) > 0 ? `<tr><td>Service (${receipt.service_charge_rate}%)</td><td class="right">${Number(receipt.service_charge_amount).toFixed(2)}</td></tr>` : ''}
-    <tr class="total-row"><td>TOTAL</td><td class="right">EGP ${Number(receipt.total).toFixed(2)}</td></tr>
+    <tr class="total-row"><td>TOTAL</td><td class="right">ILS ${Number(receipt.total).toFixed(2)}</td></tr>
   </table>
   <div class="separator"></div>
   <div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div>
@@ -141,7 +141,7 @@ export async function exportReceiptPDF(receipt: Receipt) {
     <tr><td>Subtotal</td><td class="right">${Number(receipt.subtotal).toFixed(2)}</td></tr>
     ${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}
     ${Number(receipt.tax_amount) > 0 ? `<tr><td>Tax (${receipt.tax_rate}%)</td><td class="right">${Number(receipt.tax_amount).toFixed(2)}</td></tr>` : ''}
-    <tr style="font-weight: bold;"><td>TOTAL</td><td class="right">EGP ${Number(receipt.total).toFixed(2)}</td></tr>
+    <tr style="font-weight: bold;"><td>TOTAL</td><td class="right">ILS ${Number(receipt.total).toFixed(2)}</td></tr>
   </table>
   <div class="separator"></div>
   <div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div>

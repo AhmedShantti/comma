@@ -47,7 +47,7 @@ export default function ReceiptsPage() {
     } catch { /* silent */ }
   };
 
-  const fmtCurrency = (v: number) => `EGP ${Number(v || 0).toFixed(2)}`;
+  const fmtCurrency = (v: number) => `ILS ${Number(v || 0).toFixed(2)}`;
   const fmtDate = (d: string) => {
     try { return new (globalThis.Date as any)(d).toLocaleDateString('en-EG', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
     catch { return d; }

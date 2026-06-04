@@ -32,7 +32,7 @@ export class BusinessSettings {
   @Column({ nullable: true })
   tax_id: string;
 
-  @Column({ default: 'EGP' })
+  @Column({ default: 'ILS' })
   currency_code: string;
 
   @Column({ nullable: true })
