@@ -29,6 +29,12 @@ export function OrdersTable() {
     if (!nextStatus) return;
     try {
       await updateOrderStatus(orderId, nextStatus);
+      // Refresh the selected order if it's currently open in the modal
+      if (selectedOrder?.id === orderId) {
+        const updatedOrder = await api.orders.getById(orderId);
+        setSelectedOrder(updatedOrder);
+      }
+      await refreshOrders();
     } catch (err) {
       alert(`Failed to update order: ${(err as any)?.message || 'Unknown error'}`);
     }
