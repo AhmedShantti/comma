@@ -55,13 +55,22 @@ export function CartDrawer({
     setLoading(true);
 
     try {
+      // Validate cart has items
+      if (!items || items.length === 0) {
+        setError('Your cart is empty');
+        setLoading(false);
+        return;
+      }
+
       const orderItems = items.map(item => ({
         menuItemId: item.menuItemId,
         variantId: item.variantId,
         quantity: item.quantity,
-        addons: item.addons.map(a => a.id),
+        addons: (item.addons || []).map(a => a.id),
         notes: item.notes,
       }));
+
+      console.log('[CartDrawer] Placing order with items:', orderItems);
 
       const response = await publicMenuApi.placeCustomerOrder({
         tableId,
@@ -69,6 +78,8 @@ export function CartDrawer({
         notes: notes.trim() || undefined,
         items: orderItems,
       });
+
+      console.log('[CartDrawer] Order placed successfully:', response);
 
       setSuccess(true);
       onClearCart();
