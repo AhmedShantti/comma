@@ -27,7 +27,9 @@ async function request(
     const msg = Array.isArray(error.message)
       ? error.message[0]
       : error.message || `HTTP ${response.status}`;
-    throw new Error(msg);
+    const err = new Error(msg);
+    (err as any).response = { status: response.status, data: error };
+    throw err;
   }
 
   const json = await response.json();
