@@ -25,7 +25,18 @@ export class PublicController {
     @Body() dto: CreateCustomerOrderDto,
     @Ip() ipAddress: string,
   ) {
+    console.log('[PublicController] Received POST /public/orders');
+    console.log('[PublicController] Request body:', JSON.stringify(dto, null, 2));
+    console.log('[PublicController] Items count:', dto.items?.length ?? 0);
+
     const order = await this.publicService.createCustomerOrder(dto);
+
+    console.log('[PublicController] Order created:', {
+      orderId: order.id,
+      orderNumber: order.order_number,
+      itemCount: order.items?.length ?? 0,
+    });
+
     return {
       success: true,
       orderNumber: order.order_number,

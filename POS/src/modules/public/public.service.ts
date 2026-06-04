@@ -36,6 +36,9 @@ export class PublicService {
   }
 
   async createCustomerOrder(dto: CreateCustomerOrderDto): Promise<Order> {
+    console.log('[PublicService] Creating customer order with DTO:', JSON.stringify(dto, null, 2));
+    console.log('[PublicService] Items array length:', dto.items?.length ?? 0);
+
     // Validate table exists
     const table = await this.tablesService.findById(dto.tableId);
     if (!table) {
