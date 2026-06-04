@@ -325,7 +325,7 @@ function OrderEditModal({ order, onClose, onOrderUpdate }: OrderEditModalProps) 
             <button onClick={onClose} style={{ flex: 1, padding: '12px', background: 'var(--border)', color: 'var(--text-soft)', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
               Close
             </button>
-            {order.status === 'open' && activeItems.length > 0 && (
+            {!['paid', 'completed', 'cancelled', 'refunded'].includes(order.status) && activeItems.length > 0 && (
               <button onClick={() => setShowCheckout(true)} style={{ flex: 1, padding: '12px', background: '#c9a84c', color: '#0f0e0d', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
                 💳 Checkout
               </button>
