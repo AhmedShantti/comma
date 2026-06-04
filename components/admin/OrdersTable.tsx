@@ -479,6 +479,23 @@ function ReceiptModalDisplay({ receipt, onClose }: ReceiptModalDisplayProps) {
             <button onClick={printReceipt} style={{ flex: 1, padding: '12px', background: '#4CAF50', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
               🖨️ Print
             </button>
+            <button onClick={() => {
+              const itemsHtml = (receipt.items || []).map((item: any) =>
+                `<tr><td>${item.item_name_en}</td><td style="text-align:center">${item.quantity}</td><td style="text-align:right">${Number(item.unit_price).toFixed(2)}</td><td style="text-align:right">${Number(item.line_total).toFixed(2)}</td></tr>`
+              ).join('');
+              const html = `<html><head><style>body { font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 20px; width: 72mm; } table { width: 100%; border-collapse: collapse; } td { padding: 2px 0; } .center { text-align: center; } .right { text-align: right; } .separator { border-top: 1px dashed #000; margin: 4px 0; } .business-name { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 4px; }</style></head><body><div class="business-name">${receipt.business_name || 'COMMA'}</div>${receipt.business_address ? `<div class="center">${receipt.business_address}</div>` : ''}<div class="separator"></div><div>Receipt: ${receipt.receipt_number}</div>${receipt.order_number ? `<div>Order: ${receipt.order_number}</div>` : ''}<table><tr class="bold"><td>Item</td><td style="text-align:center">Qty</td><td style="text-align:right">Price</td><td style="text-align:right">Total</td></tr>${itemsHtml}</table><div class="separator"></div><table><tr><td>Subtotal</td><td class="right">ILS ${Number(receipt.subtotal).toFixed(2)}</td></tr>${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-ILS ${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}<tr style="font-weight: bold;"><td>TOTAL</td><td class="right">ILS ${Number(receipt.total).toFixed(2)}</td></tr></table><div class="separator"></div><div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div><div class="center" style="margin-top:8px">Thank you!</div></body></html>`;
+              const blob = new Blob([html], { type: 'text/html' });
+              const url = window.URL.createObjectURL(blob);
+              const link = document.createElement('a');
+              link.href = url;
+              link.download = `receipt-${receipt.receipt_number}.html`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+              window.URL.revokeObjectURL(url);
+            }} style={{ flex: 1, padding: '12px', background: '#2196F3', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
+              📥 PDF
+            </button>
             <button onClick={onClose} style={{ flex: 1, padding: '12px', background: '#c9a84c', color: '#0f0e0d', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
               Done
             </button>
