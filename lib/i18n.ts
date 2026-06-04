@@ -34,6 +34,7 @@ export const UI = {
   // Card
   popular: { en: 'Popular', ar: 'الأكثر طلباً' },
   egp: { en: 'ILS', ar: '₪' },
+  ils: { en: 'ILS', ar: '₪' },
 
   // Admin chrome
   admin_role: { en: 'admin@comma.cafe', ar: 'admin@comma.cafe' },
