@@ -31,6 +31,7 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
   const [payMethod, setPayMethod] = useState('cash');
   const [payAmount, setPayAmount] = useState('');
   const [checkingOut, setCheckingOut] = useState(false);
+  const [receipt, setReceipt] = useState<any>(null);
 
   useEffect(() => {
     (async () => {
@@ -111,11 +112,16 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
     try {
       setCheckingOut(true);
       setError('');
-      await api.orders.checkout(order.id, {
+      const result = await api.orders.checkout(order.id, {
         payments: [{ method: payMethod, amount }],
       });
-      setSuccess('Payment processed! Receipt generated.');
-      setTimeout(() => { onClose(); }, 1500);
+      if (result?.receipt) {
+        setReceipt(result.receipt);
+        setShowCheckout(false);
+      } else {
+        setSuccess('Payment processed!');
+        setTimeout(() => { onClose(); }, 1500);
+      }
     } catch (e: any) {
       setError(e.message || 'Checkout failed');
     } finally {
@@ -323,6 +329,175 @@ export function TableOrderPanel({ order, tableId, onClose, onOrderUpdate }: Prop
             </div>
           </div>
         )}
+
+        {/* Receipt Display Modal */}
+        {receipt && (
+          <ReceiptModal receipt={receipt} onClose={() => { setReceipt(null); onClose(); }} />
+        )}
+      </div>
+    </div>
+  );
+}
+
+type ReceiptModalProps = { receipt: any; onClose: () => void };
+
+function exportReceiptPDF(receipt: any) {
+  try {
+    const itemsHtml = (receipt.items || []).map((item: any) =>
+      `<tr><td>${item.item_name_en}</td><td style="text-align:center">${item.quantity}</td><td style="text-align:right">${Number(item.unit_price).toFixed(2)}</td><td style="text-align:right">${Number(item.line_total).toFixed(2)}</td></tr>`
+    ).join('');
+
+    const html = `<html><head><style>
+      body { font-family: 'Courier New', monospace; font-size: 12px; margin: 0; padding: 20px; width: 72mm; }
+      .center { text-align: center; } .right { text-align: right; } .bold { font-weight: bold; }
+      .separator { border-top: 1px dashed #000; margin: 4px 0; }
+      .business-name { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 4px; }
+      table { width: 100%; border-collapse: collapse; } td { padding: 2px 0; }
+    </style></head><body>
+      <div class="business-name">${receipt.business_name || 'COMMA'}</div>
+      ${receipt.business_address ? `<div class="center">${receipt.business_address}</div>` : ''}
+      ${receipt.business_phone ? `<div class="center">Tel: ${receipt.business_phone}</div>` : ''}
+      <div class="separator"></div>
+      <div>Receipt: ${receipt.receipt_number}</div>
+      ${receipt.order_number ? `<div>Order: ${receipt.order_number}</div>` : ''}
+      ${receipt.table_number ? `<div>Table: ${receipt.table_number}</div>` : ''}
+      <div>Date: ${new Date(receipt.created_at).toLocaleString()}</div>
+      <div class="separator"></div>
+      <table><tr class="bold"><td>Item</td><td style="text-align:center">Qty</td><td style="text-align:right">Price</td><td style="text-align:right">Total</td></tr>${itemsHtml}</table>
+      <div class="separator"></div>
+      <table>
+        <tr><td>Subtotal</td><td class="right">${Number(receipt.subtotal).toFixed(2)}</td></tr>
+        ${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}
+        ${Number(receipt.tax_amount) > 0 ? `<tr><td>Tax (${receipt.tax_rate}%)</td><td class="right">${Number(receipt.tax_amount).toFixed(2)}</td></tr>` : ''}
+        <tr style="font-weight: bold;"><td>TOTAL</td><td class="right">EGP ${Number(receipt.total).toFixed(2)}</td></tr>
+      </table>
+      <div class="separator"></div>
+      <div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div>
+      <div class="center" style="margin-top:8px">Thank you!</div>
+    </body></html>`;
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `receipt-${receipt.receipt_number}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error('Export failed:', e);
+  }
+}
+
+function ReceiptModal({ receipt, onClose }: ReceiptModalProps) {
+  const printReceipt = () => {
+    const itemsHtml = (receipt.items || []).map((item: any) =>
+      `<tr><td>${item.item_name_en}</td><td style="text-align:center">${item.quantity}</td><td style="text-align:right">${Number(item.unit_price).toFixed(2)}</td><td style="text-align:right">${Number(item.line_total).toFixed(2)}</td></tr>`
+    ).join('');
+
+    const html = `<!DOCTYPE html><html><head><title>Receipt ${receipt.receipt_number}</title><style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Courier New', monospace; font-size: 12px; width: 72mm; margin: 0 auto; padding: 4mm; }
+      .center { text-align: center; } .right { text-align: right; } .bold { font-weight: bold; }
+      .separator { border-top: 1px dashed #000; margin: 4px 0; }
+      .business-name { font-size: 16px; font-weight: bold; text-align: center; margin-bottom: 4px; }
+      table { width: 100%; border-collapse: collapse; } td { padding: 2px 0; }
+      .total-row td { font-weight: bold; font-size: 14px; padding-top: 4px; }
+      @media print { body { width: 72mm; } }
+    </style></head><body>
+      <div class="business-name">${receipt.business_name || 'COMMA'}</div>
+      ${receipt.business_address ? `<div class="center">${receipt.business_address}</div>` : ''}
+      ${receipt.business_phone ? `<div class="center">Tel: ${receipt.business_phone}</div>` : ''}
+      <div class="separator"></div>
+      <div>Receipt: ${receipt.receipt_number}</div>
+      ${receipt.order_number ? `<div>Order: ${receipt.order_number}</div>` : ''}
+      ${receipt.table_number ? `<div>Table: ${receipt.table_number}</div>` : ''}
+      <div>Date: ${new Date(receipt.created_at).toLocaleString()}</div>
+      ${receipt.cashier_name ? `<div>Cashier: ${receipt.cashier_name}</div>` : ''}
+      <div class="separator"></div>
+      <table><tr class="bold"><td>Item</td><td style="text-align:center">Qty</td><td style="text-align:right">Price</td><td style="text-align:right">Total</td></tr>${itemsHtml}</table>
+      <div class="separator"></div>
+      <table>
+        <tr><td>Subtotal</td><td class="right">${Number(receipt.subtotal).toFixed(2)}</td></tr>
+        ${Number(receipt.discount_amount) > 0 ? `<tr><td>Discount</td><td class="right">-${Number(receipt.discount_amount).toFixed(2)}</td></tr>` : ''}
+        ${Number(receipt.tax_amount) > 0 ? `<tr><td>Tax (${receipt.tax_rate}%)</td><td class="right">${Number(receipt.tax_amount).toFixed(2)}</td></tr>` : ''}
+        ${Number(receipt.service_charge_amount) > 0 ? `<tr><td>Service (${receipt.service_charge_rate}%)</td><td class="right">${Number(receipt.service_charge_amount).toFixed(2)}</td></tr>` : ''}
+        <tr class="total-row"><td>TOTAL</td><td class="right">EGP ${Number(receipt.total).toFixed(2)}</td></tr>
+      </table>
+      <div class="separator"></div>
+      <div>Payment: ${(receipt.payment_method || 'cash').toUpperCase()}</div>
+      ${receipt.footer_message ? `<div class="separator"></div><div class="center">${receipt.footer_message}</div>` : ''}
+      <div class="separator"></div>
+      <div class="center" style="margin-top:8px">Thank you!</div>
+      <script>window.onload=function(){window.print();setTimeout(function(){window.close();},500);};</script>
+    </body></html>`;
+
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (printWindow) {
+      printWindow.document.write(html);
+      printWindow.document.close();
+    }
+  };
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1002, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ background: '#1a1918', borderRadius: '12px', maxWidth: '500px', width: '100%', maxHeight: '85vh', overflow: 'auto', border: '1px solid rgba(201,168,76,0.15)' }} onClick={e => e.stopPropagation()}>
+        <div style={{ padding: '24px 24px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h2 style={{ fontSize: '18px', fontWeight: 600, margin: 0 }}>{receipt.receipt_number}</h2>
+              <p style={{ fontSize: '13px', color: '#999', marginTop: '4px' }}>{new Date(receipt.created_at).toLocaleDateString()}</p>
+            </div>
+            <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#999', fontSize: '20px', cursor: 'pointer' }}>×</button>
+          </div>
+        </div>
+
+        <div style={{ padding: '16px 24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          {receipt.order_number && <div><span style={{ color: '#999' }}>Order:</span> {receipt.order_number}</div>}
+          {receipt.table_number && <div><span style={{ color: '#999' }}>Table:</span> {receipt.table_number}</div>}
+          {receipt.cashier_name && <div><span style={{ color: '#999' }}>Cashier:</span> {receipt.cashier_name}</div>}
+        </div>
+
+        <div style={{ padding: '16px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>Items</h3>
+          {(receipt.items || []).map((item: any, i: number) => (
+            <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', fontSize: '13px', borderBottom: i < receipt.items.length - 1 ? '1px solid rgba(255,255,255,0.03)' : 'none' }}>
+              <div>
+                <span>{item.item_name_en}</span>
+                <span style={{ color: '#999', marginLeft: '8px' }}>x{item.quantity}</span>
+              </div>
+              <span style={{ fontWeight: 500 }}>EGP {Number(item.line_total).toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ padding: '16px 24px', fontSize: '13px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Subtotal</span><span>EGP {Number(receipt.subtotal).toFixed(2)}</span></div>
+          {Number(receipt.discount_amount) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Discount</span><span style={{ color: '#F44336' }}>-EGP {Number(receipt.discount_amount).toFixed(2)}</span></div>}
+          {Number(receipt.tax_amount) > 0 && <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}><span style={{ color: '#999' }}>Tax ({receipt.tax_rate}%)</span><span>EGP {Number(receipt.tax_amount).toFixed(2)}</span></div>}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(201,168,76,0.15)', fontSize: '16px', fontWeight: 700 }}>
+            <span>Total</span><span style={{ color: '#c9a84c' }}>EGP {Number(receipt.total).toFixed(2)}</span>
+          </div>
+        </div>
+
+        <div style={{ padding: '16px 24px' }}>
+          <div style={{ fontSize: '13px', marginBottom: '8px' }}>
+            <span style={{ color: '#999' }}>Payment: </span>
+            <span style={{ textTransform: 'uppercase', fontWeight: 500 }}>{receipt.payment_method || 'cash'}</span>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', marginTop: '16px' }}>
+            <button onClick={printReceipt} style={{ flex: 1, padding: '12px', background: '#4CAF50', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
+              🖨️ Print
+            </button>
+            <button onClick={() => exportReceiptPDF(receipt)} style={{ flex: 1, padding: '12px', background: '#2196F3', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
+              📥 PDF
+            </button>
+            <button onClick={onClose} style={{ flex: 1, padding: '12px', background: '#c9a84c', color: '#0f0e0d', border: 'none', borderRadius: '6px', fontWeight: 600, cursor: 'pointer', fontSize: '14px' }}>
+              Done
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

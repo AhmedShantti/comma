@@ -84,6 +84,11 @@ export class OrdersController {
     };
   }
 
+  @Get(':id/receipt')
+  async getOrderReceipt(@Param('id') id: string) {
+    return this.receiptService.findByOrderId(id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ordersService.findById(id);

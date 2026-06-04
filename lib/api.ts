@@ -218,6 +218,9 @@ export const api = {
     getById: (id: string) =>
       request(`/api/v1/orders/${id}`),
 
+    getReceipt: (id: string) =>
+      request(`/api/v1/orders/${id}/receipt`),
+
     create: (data: any) =>
       request("/api/v1/orders", {
         method: "POST",

@@ -102,6 +102,19 @@ export class ReceiptService {
     return receipt;
   }
 
+  async findByOrderId(orderId: string): Promise<Receipt> {
+    const receipt = await this.receiptsRepository.findOne({
+      where: { order_id: orderId },
+      relations: ['items'],
+    });
+
+    if (!receipt) {
+      throw new NotFoundException('Receipt not found for this order');
+    }
+
+    return receipt;
+  }
+
   async findAll(filters: any) {
     const page = Number(filters.page) || 1;
     const limit = Number(filters.limit) || 20;
