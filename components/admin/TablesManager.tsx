@@ -221,7 +221,7 @@ export function TablesManager() {
       setLoading(true);
       setError('');
       const result = await api.tables.getAll();
-      setTables(result);
+      setTables(Array.isArray(result) ? result : result?.data || []);
     } catch (e: any) {
       setError(e.message || 'Failed to load tables');
     } finally {
