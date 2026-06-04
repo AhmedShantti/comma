@@ -15,17 +15,25 @@ export class TransformInterceptor implements NestInterceptor {
           return data;
         }
 
+        // For paginated responses with meta, wrap correctly
+        if (data && data.meta && data.data) {
+          return {
+            success: true,
+            data: {
+              data: data.data,
+              meta: data.meta,
+            },
+            statusCode,
+            timestamp: new Date().toISOString(),
+          };
+        }
+
         const apiResponse: ApiResponseDto<any> = {
           success: true,
           data,
           statusCode,
           timestamp: new Date().toISOString(),
         };
-
-        if (data && data.meta) {
-          apiResponse.meta = data.meta;
-          apiResponse.data = data.data;
-        }
 
         return apiResponse;
       }),
