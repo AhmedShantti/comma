@@ -34,6 +34,10 @@ async function request(
 
   const json = await response.json();
   // Unwrap the TransformInterceptor envelope: { success, data, ... } → data
+  // But preserve paginated responses that have both data and meta properties
+  if (json?.data?.meta && json?.data?.data !== undefined) {
+    return json.data; // Paginated response: return { data: [...], meta: {...} }
+  }
   return json?.data !== undefined ? json.data : json;
 }
 
